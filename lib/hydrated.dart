@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// [HydratedSubject] is a [BehaviorSubject] that automatically persists its values and is easily hydrated.
+/// A [BehaviorSubject] that automatically persists its values and is asynchrously hydrated.
 ///
 /// Hydrate with the async method [HydratedSubject.hydrate()].
 ///

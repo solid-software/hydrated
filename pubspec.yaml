@@ -1,8 +1,8 @@
 name: hydrated
-description: A new Flutter package project.
-version: 1.0.0+1
+description: An automatically persisted BehaviorSubject with simple hydration for Flutter. Intended for use with the BLoC pattern.
+version: 1.0.0+2
 author: Luke Pighetti <lukepighetti@gmail.com>
-homepage: https://github.com/lukepighetti/hydrate
+homepage: https://github.com/lukepighetti/hydrated
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
