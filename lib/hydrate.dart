@@ -4,6 +4,19 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// [HydratedSubject] is a [BehaviorSubject] that automatically persists its values and is easily hydrated.
+///
+/// Hydrate with the async method [HydratedSubject.hydrate()].
+///
+/// HydratedSubject supports the same types as [shared_preferences] such as: `int`, `double`, `bool`, `String`, and `List<String>`
+///
+/// Example:
+///
+/// ```
+///   final count$ = HydratedSubject<int>("count", seedValue: 0);
+///   await count$.hydrate();
+/// ```
+
 class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   String _key;
   T _seedValue;
@@ -25,7 +38,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     bool sync: false,
   }) {
     // assert that T is a type compatible with shared_preferences
-
     assert(T == int || T == double || T == bool || T == String || [""] is T);
 
     // ignore: close_sinks
@@ -67,6 +79,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   set value(T newValue) => add(newValue);
 
   /// Hydrates the HydratedSubject with a value stored on the user's device.
+  ///
+  /// Must be called to retreive values stored on the device.
   Future<void> hydrate() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -112,6 +126,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       );
   }
 
+  /// A unique key that references a storage container for a value persisted on the device.
   String get key => this._key;
 }
 
