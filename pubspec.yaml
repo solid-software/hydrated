@@ -1,8 +1,8 @@
 name: hydrate
 description: A new Flutter package project.
-version: 0.0.1
-author:
-homepage:
+version: 0.1.0
+author: Luke Pighetti
+homepage: https://github.com/lukepighetti/hydrate
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  rxdart: ^0.20.0
+  shared_preferences: ^0.4.3
 
 dev_dependencies:
   flutter_test:

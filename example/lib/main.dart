@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hydrate/hydrate.dart';
 
 void main() => runApp(MyApp());
 
