@@ -10,7 +10,7 @@ void main() {
     "flutter.double": 1.1,
     "flutter.bool": true,
     "flutter.String": "first",
-    // "flutter.List<String>": ["a", "b"],
+    "flutter.List<String>": ["a", "b"],
   });
 
   test('shared preferences', () async {
@@ -40,10 +40,10 @@ void main() {
     await testHydrated<String>(subject, "first", "second");
   });
 
-  // test('List<String>', () async {
-  //   final subject = HydratedSubject<List>("List<String>");
-  //   testHydrated<List>(subject, ["a", "b"], ["b", "c"]);
-  // });
+  test('List<String>', () async {
+    final subject = HydratedSubject<List<String>>("List<String>");
+    testHydrated<List<String>>(subject, ["a", "b"], ["c", "d"]);
+  });
 }
 
 Future<void> testHydrated<T>(

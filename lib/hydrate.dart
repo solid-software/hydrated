@@ -25,8 +25,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     bool sync: false,
   }) {
     // assert that T is a type compatible with shared_preferences
-    // TODO: would prefer a check for List<String> instead of List
-    assert(T == int || T == double || T == bool || T == String || T == List);
+
+    assert(T == int || T == double || T == bool || T == String || [""] is T);
 
     // ignore: close_sinks
     final controller = new StreamController<T>.broadcast(
@@ -69,8 +69,25 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   Future<void> hydrate() async {
     final prefs = await SharedPreferences.getInstance();
-    final val = prefs.get(this._key);
 
+    var val;
+
+    if (T == int)
+      val = prefs.getInt(this._key);
+    else if (T == double)
+      val = prefs.getDouble(this._key);
+    else if (T == bool)
+      val = prefs.getBool(this._key);
+    else if (T == String)
+      val = prefs.getString(this._key);
+    else if ([""] is T)
+      val = prefs.getStringList(this._key);
+    else
+      Exception(
+        "hydrate – value must be int, double, bool, String, or List<String>",
+      );
+
+    // TODO: should we allow intentional null values ?
     if (val != null && val != _seedValue) {
       add(val);
     }
