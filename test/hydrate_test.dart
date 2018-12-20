@@ -22,22 +22,22 @@ void main() {
 
   test('int', () async {
     final subject = HydratedSubject<int>("int");
-    testHydrated<int>(subject, 1, 2);
+    await testHydrated<int>(subject, 1, 2);
   });
 
   test('double', () async {
     final subject = HydratedSubject<double>("double");
-    testHydrated<double>(subject, 1.1, 2.2);
+    await testHydrated<double>(subject, 1.1, 2.2);
   });
 
   test('bool', () async {
     final subject = HydratedSubject<bool>("bool");
-    testHydrated<bool>(subject, true, false);
+    await testHydrated<bool>(subject, true, false);
   });
 
   test('String', () async {
     final subject = HydratedSubject<String>("String");
-    testHydrated<String>(subject, "first", "second");
+    await testHydrated<String>(subject, "first", "second");
   });
 
   // test('List<String>', () async {
@@ -46,7 +46,11 @@ void main() {
   // });
 }
 
-testHydrated<T>(HydratedSubject<T> subject, T first, T second) async {
+Future<void> testHydrated<T>(
+  HydratedSubject<T> subject,
+  T first,
+  T second,
+) async {
   /// null before hydrate
   expect(subject.value, equals(null));
 
