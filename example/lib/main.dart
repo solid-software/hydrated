@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
-// import 'package:rxdart/rxdart.dart';
-// import 'package:hydrate/hydrate.dart';
-
-import 'package:hydrate_demo/bloc.dart';
+import 'package:hydrate/hydrate.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AppBloc(
-      child: MaterialApp(
-        title: 'Hydrate Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: MyHomePage(title: 'Hydrate Demo'),
+    return MaterialApp(
+      title: 'Hydrate Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: MyHomePage(title: 'Hydrate Demo'),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
+  final count$ = HydratedSubject<int>("count", seedValue: 0);
+
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final count$ = AppBloc.of(context).count$;
+    this.count$.hydrate();
 
     return Scaffold(
       appBar: AppBar(
