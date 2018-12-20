@@ -94,9 +94,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
         "hydrate – value must be int, double, bool, String, or List<String>",
       );
   }
-
-  // hydrate();
-  // controller.stream.listen(persist);
 }
 
 class _Wrapper<T> {
