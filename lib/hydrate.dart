@@ -84,10 +84,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       val = prefs.getStringList(this._key);
     else
       Exception(
-        "hydrate – value must be int, double, bool, String, or List<String>",
+        "hydrate – shared_preferences returned an invalid type",
       );
 
-    // TODO: should we allow intentional null values ?
+    // do not hydrate if the store is empty or matches the seed value
     if (val != null && val != _seedValue) {
       add(val);
     }
