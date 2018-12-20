@@ -1,4 +1,4 @@
-# hydrate
+# hydrated
 
 A new Flutter package project.
 

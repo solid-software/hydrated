@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hydrate/hydrate.dart';
+import 'package:hydrated/hydrated.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,11 +7,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Hydrate Demo',
+      title: 'Hydrated Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Hydrate Demo'),
+      home: MyHomePage(title: 'Hydrated Demo'),
     );
   }
 }

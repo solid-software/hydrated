@@ -1,4 +1,4 @@
-# hydrate_demo
+# hydrated_demo
 
 A new Flutter project.
 

@@ -1,4 +1,4 @@
-library hydrate;
+library hydrated;
 
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -98,7 +98,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       val = prefs.getStringList(this._key);
     else
       Exception(
-        "hydrate – shared_preferences returned an invalid type",
+        "HydratedSubject – shared_preferences returned an invalid type",
       );
 
     // do not hydrate if the store is empty or matches the seed value
@@ -122,7 +122,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       await prefs.setStringList(_key, val);
     else
       Exception(
-        "hydrate – value must be int, double, bool, String, or List<String>",
+        "HydratedSubject – value must be int, double, bool, String, or List<String>",
       );
   }
 

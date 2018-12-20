@@ -1,4 +1,4 @@
-name: hydrate_demo
+name: hydrated_demo
 description: A new Flutter project.
 
 # The following defines the version and build number for your application.
@@ -19,7 +19,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  hydrate:
+  hydrated:
     path: ../
 
   rxdart: ^0.20.0
