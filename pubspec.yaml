@@ -1,7 +1,7 @@
 name: hydrated
 description: A new Flutter package project.
 version: 1.0.0+1
-author: Luke Pighetti
+author: Luke Pighetti <lukepighetti@gmail.com>
 homepage: https://github.com/lukepighetti/hydrate
 
 environment:
