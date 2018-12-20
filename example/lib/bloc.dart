@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,27 +17,37 @@ class AppBloc extends InheritedWidget {
 }
 
 class _Bloc {
-  final count$ = BehaviorSubject<int>(seedValue: 0);
+  BehaviorSubject<int> count$; // must be null or it resets progress
 
   _Bloc() {
-    hydrate();
-    this.count$.listen(persist);
-  }
-
-  persist(int val) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt("count", val);
-  }
-
-  hydrate() async {
-    final prefs = await SharedPreferences.getInstance();
-    final val = prefs.getInt("count");
-    if (val != null) {
-      this.count$.add(val);
-    }
+    this.count$ = hydrated("count", BehaviorSubject<int>());
   }
 
   dispose() {
     count$.close();
   }
+}
+
+StreamController<int> hydrated(
+  String key,
+  StreamController<int> controller, {
+  int seedValue,
+}) {
+  hydrate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final val = prefs.getInt(key);
+    if (val != null && val != seedValue) {
+      controller.add(val);
+    }
+  }
+
+  persist(int val) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(key, val);
+  }
+
+  hydrate();
+  controller.stream.listen(persist);
+
+  return controller;
 }
