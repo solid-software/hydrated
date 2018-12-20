@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:hydrate/hydrate.dart';
+// import 'package:rxdart/rxdart.dart';
+// import 'package:hydrate/hydrate.dart';
 
-import 'bloc.dart';
+import 'package:hydrate_demo/bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -53,7 +53,7 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => count$.add(count$.value + 1),
+        onPressed: () => count$.value++,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
