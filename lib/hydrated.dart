@@ -22,9 +22,14 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   T _seedValue;
   _Wrapper<T> _wrapper;
 
+  T Function(String value) _hydrate;
+  String Function(T value) _persist;
+
   HydratedSubject._(
     this._key,
     this._seedValue,
+    this._hydrate,
+    this._persist,
     StreamController<T> controller,
     Observable<T> observable,
     this._wrapper,
@@ -33,12 +38,19 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   factory HydratedSubject(
     String key, {
     T seedValue,
+    T Function(String value) hydrate,
+    String Function(T value) persist,
     void onListen(),
     void onCancel(),
     bool sync: false,
   }) {
     // assert that T is a type compatible with shared_preferences
-    assert(T == int || T == double || T == bool || T == String || [""] is T);
+    assert(T == int ||
+        T == double ||
+        T == bool ||
+        T == String ||
+        [""] is T ||
+        (hydrate != null && persist != null));
 
     // ignore: close_sinks
     final controller = new StreamController<T>.broadcast(
@@ -52,6 +64,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     return new HydratedSubject<T>._(
         key,
         seedValue,
+        hydrate,
+        persist,
         controller,
         new Observable<T>.defer(
             () => wrapper.latestValue == null
@@ -65,7 +79,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   @override
   void onAdd(T event) {
     _wrapper.latestValue = event;
-    _persist(event);
+    _persistValue(event);
   }
 
   @override
@@ -96,6 +110,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       val = prefs.getString(this._key);
     else if ([""] is T)
       val = prefs.getStringList(this._key);
+    else if (this._hydrate != null)
+      val = this._hydrate(prefs.getString(this._key));
     else
       Exception(
         "HydratedSubject – shared_preferences returned an invalid type",
@@ -103,11 +119,12 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
 
     // do not hydrate if the store is empty or matches the seed value
     if (val != null && val != _seedValue) {
+      print("added");
       add(val);
     }
   }
 
-  _persist(T val) async {
+  _persistValue(T val) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (val is int)
@@ -120,6 +137,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       await prefs.setString(_key, val);
     else if (val is List<String>)
       await prefs.setStringList(_key, val);
+    else if (this._persist != null)
+      await prefs.setString(_key, this._persist(val));
     else
       Exception(
         "HydratedSubject – value must be int, double, bool, String, or List<String>",
