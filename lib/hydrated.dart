@@ -87,7 +87,7 @@ class HydratedSubject<T> extends AbstractHydratedSubject<T>
   }
 
   @override
-  _persistValue(T val) async {
+  persistValue(T val) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (val is int)
@@ -131,7 +131,7 @@ abstract class AbstractHydratedSubject<T> extends Subject<T>
   @override
   void onAdd(T event) {
     _wrapper.latestValue = event;
-    _persistValue(event);
+    persistValue(event);
   }
 
   @override
@@ -146,7 +146,7 @@ abstract class AbstractHydratedSubject<T> extends Subject<T>
 
   Future<void> hydrate();
 
-  _persistValue(T val);
+  persistValue(T val);
 
   /// A unique key that references a storage container for a value persisted on the device.
   String get key => this._key;
