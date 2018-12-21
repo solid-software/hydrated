@@ -17,23 +17,18 @@ import 'package:rxdart/rxdart.dart';
 ///   await count$.hydrate();
 /// ```
 
-class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
-  String _key;
-  T _seedValue;
-  _Wrapper<T> _wrapper;
-
-  T Function(String value) _hydrate;
-  String Function(T value) _persist;
-
+class HydratedSubject<T> extends AbstractHydratedSubject<T>
+    implements ValueObservable<T> {
   HydratedSubject._(
-    this._key,
-    this._seedValue,
-    this._hydrate,
-    this._persist,
+    String _key,
+    T _seedValue,
+    T Function(String value) _hydrate,
+    String Function(T value) _persist,
     StreamController<T> controller,
     Observable<T> observable,
-    this._wrapper,
-  ) : super(controller, observable);
+    _Wrapper<T> _wrapper,
+  ) : super(_key, _seedValue, _hydrate, _persist, controller, observable,
+            _wrapper);
 
   factory HydratedSubject(
     String key, {
@@ -53,48 +48,33 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
         (hydrate != null && persist != null));
 
     // ignore: close_sinks
-    final controller = new StreamController<T>.broadcast(
+    final controller = StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final wrapper = new _Wrapper<T>(seedValue);
+    final wrapper = _Wrapper<T>(seedValue);
 
-    return new HydratedSubject<T>._(
+    return HydratedSubject<T>._(
         key,
         seedValue,
         hydrate,
         persist,
         controller,
-        new Observable<T>.defer(
+        Observable<T>.defer(
             () => wrapper.latestValue == null
                 ? controller.stream
-                : new Observable<T>(controller.stream)
+                : Observable<T>(controller.stream)
                     .startWith(wrapper.latestValue),
             reusable: true),
         wrapper);
   }
 
-  @override
-  void onAdd(T event) {
-    _wrapper.latestValue = event;
-    _persistValue(event);
-  }
-
-  @override
-  ValueObservable<T> get stream => this;
-
-  /// Get the latest value emitted by the Subject
-  @override
-  T get value => _wrapper.latestValue;
-
-  /// Set and emit the new value
-  set value(T newValue) => add(newValue);
-
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
-  /// Must be called to retreive values stored on the device.
+  /// Must be called to retrieve values stored on the device.
+  @override
   Future<void> hydrate() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -124,6 +104,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     }
   }
 
+  @override
   _persistValue(T val) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -144,6 +125,49 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
         "HydratedSubject – value must be int, double, bool, String, or List<String>",
       );
   }
+}
+
+abstract class AbstractHydratedSubject<T> extends Subject<T>
+    implements ValueObservable<T> {
+  String _key;
+  T _seedValue;
+  _Wrapper<T> _wrapper;
+
+  T Function(String value) _hydrate;
+  String Function(T value) _persist;
+
+  AbstractHydratedSubject(
+    this._key,
+    this._seedValue,
+    this._hydrate,
+    this._persist,
+    StreamController<T> controller,
+    Observable<T> observable,
+    this._wrapper,
+  ) : super(controller, observable);
+
+  @override
+  void onAdd(T event) {
+    _wrapper.latestValue = event;
+    _persistValue(event);
+  }
+
+  @override
+  ValueObservable<T> get stream => this;
+
+  /// Get the latest value emitted by the Subject
+  @override
+  T get value => _wrapper.latestValue;
+
+  /// Set and emit the new value
+  set value(T newValue) => add(newValue);
+
+  /// Hydrates the HydratedSubject with a value stored on the user's device.
+  ///
+  /// Must be called to retreive values stored on the device.
+  Future<void> hydrate();
+
+  _persistValue(T val);
 
   /// A unique key that references a storage container for a value persisted on the device.
   String get key => this._key;
