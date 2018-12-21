@@ -47,28 +47,10 @@ class HydratedSubject<T> extends AbstractHydratedSubject<T>
         [""] is T ||
         (hydrate != null && persist != null));
 
-    // ignore: close_sinks
-    final controller = StreamController<T>.broadcast(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: sync,
-    );
+    final setup = HydratedSetup(seedValue, onListen, onCancel, sync);
 
-    final wrapper = _Wrapper<T>(seedValue);
-
-    return HydratedSubject<T>._(
-        key,
-        seedValue,
-        hydrate,
-        persist,
-        controller,
-        Observable<T>.defer(
-            () => wrapper.latestValue == null
-                ? controller.stream
-                : Observable<T>(controller.stream)
-                    .startWith(wrapper.latestValue),
-            reusable: true),
-        wrapper);
+    return HydratedSubject<T>._(key, seedValue, hydrate, persist,
+        setup.controller, setup.observable, setup.wrapper);
   }
 
   /// Hydrates the HydratedSubject with a value stored on the user's device.
@@ -164,13 +146,37 @@ abstract class AbstractHydratedSubject<T> extends Subject<T>
 
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
-  /// Must be called to retreive values stored on the device.
+  /// Must be called to retrieve values stored on the device.
   Future<void> hydrate();
 
   _persistValue(T val);
 
   /// A unique key that references a storage container for a value persisted on the device.
   String get key => this._key;
+}
+
+class HydratedSetup<T> {
+  // ignore: close_sinks
+  StreamController<T> controller;
+  _Wrapper<T> wrapper;
+  Observable<T> observable;
+
+  HydratedSetup(T seedValue, void onListen(), void onCancel(), bool sync) {
+    // ignore: close_sinks
+    controller = StreamController<T>.broadcast(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: sync,
+    );
+
+    wrapper = _Wrapper<T>(seedValue);
+
+    observable = Observable<T>.defer(
+        () => wrapper.latestValue == null
+            ? controller.stream
+            : Observable<T>(controller.stream).startWith(wrapper.latestValue),
+        reusable: true);
+  }
 }
 
 class _Wrapper<T> {
