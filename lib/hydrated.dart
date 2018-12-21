@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// A [BehaviorSubject] that automatically persists its values and is asynchrously hydrated.
+/// A [BehaviorSubject] that automatically persists its values and is asynchronously hydrated.
 ///
 /// Hydrate with the async method [HydratedSubject.hydrate()].
 ///
@@ -144,9 +144,6 @@ abstract class AbstractHydratedSubject<T> extends Subject<T>
   /// Set and emit the new value
   set value(T newValue) => add(newValue);
 
-  /// Hydrates the HydratedSubject with a value stored on the user's device.
-  ///
-  /// Must be called to retrieve values stored on the device.
   Future<void> hydrate();
 
   _persistValue(T val);
