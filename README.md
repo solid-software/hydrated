@@ -1,6 +1,6 @@
-# Hydrated
+# Hydrated 
 
-Hydrated provides a BehaviorSubject that automatically persists to Flutter's local storage. Rehydrate on command!
+Hydrated provides a BehaviorSubject that automatically persists to Flutter's local storage. An async `hydrate()` method rehydrates on command!
 
 ## Easy to consume
 
@@ -31,7 +31,7 @@ class _Bloc {
 
 ## Standard types
 
-We support `shared_preferences` types.
+We support all `shared_preferences` types.
 
 - `int`
 - `double`
@@ -41,6 +41,6 @@ We support `shared_preferences` types.
 
 ## Reliable
 
-Hydrated is mock tested with all supported types against `shared_preferences`.
+Hydrated is mock tested with all supported types and is dogfooded by its creator.
 
-<img alt="demo of under, critically, and over damped Flutter curves" src="./docs/hydrated.gif" width="400">
+<img alt="demo of Hydrated BehaviorSubject between app restarts" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/docs/hydrated.gif" width="400">
