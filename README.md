@@ -29,9 +29,9 @@ class _Bloc {
 }
 ```
 
-## Standard types
+## Simple types and serialized class support
 
-We support all `shared_preferences` types.
+We support all `shared_preferences` types out-of-the-box.
 
 - `int`
 - `double`
@@ -43,9 +43,7 @@ We support all `shared_preferences` types.
 final count$ = HydratedSubject<int>("count");
 ```
 
-## Serialized classes
-
-We support all classes that serialize to and from a String.
+We also support serialized classes.
 
 ```dart
 final user$ = HydratedSubject<User>(
