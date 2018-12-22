@@ -10,10 +10,25 @@ import 'package:rxdart/rxdart.dart';
 ///
 /// HydratedSubject supports the same types as [shared_preferences] such as: `int`, `double`, `bool`, `String`, and `List<String>`
 ///
+/// Serialized classes are also supported by using the `hydrate: (String)=>Class` and `persist: (Class)=>String` constructor arguments.
+///
 /// Example:
 ///
 /// ```
 ///   final count$ = HydratedSubject<int>("count", seedValue: 0);
+///   await count$.hydrate();
+/// ```
+///
+/// SerializedClass example:
+///
+/// ```
+///   final count$ = HydratedSubject<int>(
+///     "count",
+///     hydrate: (String s)=>SerializedClass.fromJSON(s),
+///     persist: (SerializedClass c)=>c.toJSON(),
+///     seedValue: 0,
+///   );
+///
 ///   await count$.hydrate();
 /// ```
 

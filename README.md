@@ -1,4 +1,4 @@
-# Hydrated 
+# Hydrated
 
 Hydrated provides a BehaviorSubject that automatically persists to Flutter's local storage. An async `hydrate()` method rehydrates on command!
 
@@ -38,6 +38,22 @@ We support all `shared_preferences` types.
 - `bool`
 - `String`
 - `List<String>`
+
+```dart
+final count$ = HydratedSubject<int>("count");
+```
+
+## Serialized classes
+
+We support all classes that serialize to and from a String.
+
+```dart
+final user$ = HydratedSubject<User>(
+  "user",
+  hydrate: (String s)=>User.fromJSON(s),
+  persist: (User user)=>user.toJSON(),
+);
+```
 
 ## Reliable
 
