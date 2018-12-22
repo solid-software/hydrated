@@ -19,17 +19,17 @@ import 'package:rxdart/rxdart.dart';
 ///   await count$.hydrate();
 /// ```
 ///
-/// SerializedClass example:
+/// Serialized class example:
 ///
 /// ```
-///   final count$ = HydratedSubject<int>(
-///     "count",
-///     hydrate: (String s)=>SerializedClass.fromJSON(s),
-///     persist: (SerializedClass c)=>c.toJSON(),
-///     seedValue: 0,
+///   final user$ = HydratedSubject<User>(
+///     "user",
+///     hydrate: (String s) => User.fromJSON(s),
+///     persist: (User user) => user.toJSON(),
+///     seedValue: User.empty(),
 ///   );
 ///
-///   await count$.hydrate();
+///   await user$.hydrate();
 /// ```
 
 class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {

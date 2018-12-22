@@ -1,3 +1,7 @@
+## 1.1.0+3
+
+- Fix docs, never gonna give up that build number
+
 ## 1.1.0
 
 - Add support for serialized classes, remove build number
