@@ -29,9 +29,9 @@ class _Bloc {
 }
 ```
 
-## Simple types and serialized class support
+## Supports types and classes
 
-We support all `shared_preferences` types out-of-the-box.
+We support all `shared_preferences` types.
 
 - `int`
 - `double`
@@ -43,13 +43,13 @@ We support all `shared_preferences` types out-of-the-box.
 final count$ = HydratedSubject<int>("count");
 ```
 
-We also support serialized classes.
+We also support serialized classes with `hydrate` and `persist` arguments.
 
 ```dart
 final user$ = HydratedSubject<User>(
   "user",
-  hydrate: (String s)=>User.fromJSON(s),
-  persist: (User user)=>user.toJSON(),
+  hydrate: (String s) => User.fromJSON(s),
+  persist: (User user) => user.toJSON(),
 );
 ```
 
