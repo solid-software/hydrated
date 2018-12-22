@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   final String title;
-  final count$ = HydratedSubject<Data>(
-    "count",
-    hydrate: (value) => Data.fromJSON(value),
+  final count$ = HydratedSubject<SerializedClass>(
+    "serialized-count",
+    hydrate: (value) => SerializedClass.fromJSON(value),
     persist: (value) => value.toJSON,
-    seedValue: Data.fromJSON("0"),
+    seedValue: SerializedClass(0),
   );
 
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -31,12 +31,14 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     this.count$.hydrate();
 
+    print('Serialized Hydrated Demo');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(this.title),
       ),
       body: Center(
-        child: StreamBuilder<Data>(
+        child: StreamBuilder<SerializedClass>(
           stream: count$,
           initialData: count$.value,
           builder: (context, snap) => Column(
@@ -56,7 +58,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final count = count$.value.count + 1;
-          count$.add(Data.fromJSON(count.toString()));
+          count$.add(SerializedClass(count));
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
@@ -65,10 +67,12 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class Data {
+class SerializedClass {
   final int count;
 
-  Data.fromJSON(String json) : this.count = int.parse(json);
+  SerializedClass(this.count);
+
+  SerializedClass.fromJSON(String json) : this.count = int.parse(json);
 
   String get toJSON => count.toString();
 }
