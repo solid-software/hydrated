@@ -1,3 +1,7 @@
+## 1.1.0+4
+
+- Improved docs
+
 ## 1.1.0+3
 
 - Fix docs, never gonna give up that build number
