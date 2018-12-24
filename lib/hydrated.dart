@@ -149,7 +149,9 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       add(val);
     }
 
-    this._onHydrate();
+    if (_onHydrate != null) {
+      this._onHydrate();
+    }
   }
 
   _persistValue(T val) async {
