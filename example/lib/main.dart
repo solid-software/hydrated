@@ -24,8 +24,6 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.count$.hydrate();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(this.title),

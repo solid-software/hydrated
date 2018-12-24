@@ -4,19 +4,16 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// A [BehaviorSubject] that automatically persists its values and is asynchrously hydrated.
+/// A [BehaviorSubject] that automatically persists its values and hydrates on creation.
 ///
-/// Hydrate with the async method [HydratedSubject.hydrate()].
+/// HydratedSubject supports serialized classes and [shared_preferences] types such as: `int`, `double`, `bool`, `String`, and `List<String>`
 ///
-/// HydratedSubject supports the same types as [shared_preferences] such as: `int`, `double`, `bool`, `String`, and `List<String>`
-///
-/// Serialized classes are also supported by using the `hydrate: (String)=>Class` and `persist: (Class)=>String` constructor arguments.
+/// Serialized classes are supported by using the `hydrate: (String)=>Class` and `persist: (Class)=>String` constructor arguments.
 ///
 /// Example:
 ///
 /// ```
 ///   final count$ = HydratedSubject<int>("count", seedValue: 0);
-///   await count$.hydrate();
 /// ```
 ///
 /// Serialized class example:
@@ -28,8 +25,15 @@ import 'package:rxdart/rxdart.dart';
 ///     persist: (User user) => user.toJSON(),
 ///     seedValue: User.empty(),
 ///   );
+/// ```
 ///
-///   await user$.hydrate();
+/// Hydration is performed automatically and is asynchronous. The `onHydrate` callback is called when hydration is complete.
+///
+/// ```
+///   final user$ = HydratedSubject<int>(
+///     "count",
+///     onHydrate: () => loading$.add(false),
+///   );
 /// ```
 
 class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
@@ -39,27 +43,33 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
 
   T Function(String value) _hydrate;
   String Function(T value) _persist;
+  void Function() _onHydrate;
 
   HydratedSubject._(
     this._key,
     this._seedValue,
     this._hydrate,
     this._persist,
+    this._onHydrate,
     StreamController<T> controller,
     Observable<T> observable,
     this._wrapper,
-  ) : super(controller, observable);
+  ) : super(controller, observable) {
+    _hydrateSubject();
+  }
 
   factory HydratedSubject(
     String key, {
     T seedValue,
     T Function(String value) hydrate,
     String Function(T value) persist,
+    void onHydrate(),
     void onListen(),
     void onCancel(),
     bool sync: false,
   }) {
-    // assert that T is a type compatible with shared_preferences
+    // assert that T is a type compatible with shared_preferences,
+    // or that we have hydrate and persist mapping functions
     assert(T == int ||
         T == double ||
         T == bool ||
@@ -81,6 +91,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
         seedValue,
         hydrate,
         persist,
+        onHydrate,
         controller,
         new Observable<T>.defer(
             () => wrapper.latestValue == null
@@ -110,7 +121,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
   /// Must be called to retreive values stored on the device.
-  Future<void> hydrate() async {
+  Future<void> _hydrateSubject() async {
     final prefs = await SharedPreferences.getInstance();
 
     var val;
@@ -133,10 +144,12 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       );
 
     // do not hydrate if the store is empty or matches the seed value
+    // TODO: allow writing of seedValue if it is intentional
     if (val != null && val != _seedValue) {
-      print("added");
       add(val);
     }
+
+    this._onHydrate();
   }
 
   _persistValue(T val) async {

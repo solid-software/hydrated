@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,35 +26,33 @@ void main() {
   });
 
   test('int', () async {
-    final subject = HydratedSubject<int>("int");
-    await testHydrated<int>(subject, 1, 2);
+    await testHydrated<int>("int", 1, 2);
   });
 
   test('double', () async {
-    final subject = HydratedSubject<double>("double");
-    await testHydrated<double>(subject, 1.1, 2.2);
+    await testHydrated<double>("double", 1.1, 2.2);
   });
 
   test('bool', () async {
-    final subject = HydratedSubject<bool>("bool");
-    await testHydrated<bool>(subject, true, false);
+    await testHydrated<bool>("bool", true, false);
   });
 
   test('String', () async {
-    final subject = HydratedSubject<String>("String");
-    await testHydrated<String>(subject, "first", "second");
+    await testHydrated<String>("String", "first", "second");
   });
 
   test('List<String>', () async {
-    final subject = HydratedSubject<List<String>>("List<String>");
-    testHydrated<List<String>>(subject, ["a", "b"], ["c", "d"]);
+    testHydrated<List<String>>("List<String>", ["a", "b"], ["c", "d"]);
   });
 
   test('SerializedClass', () async {
+    final completer = Completer();
+
     final subject = HydratedSubject<SerializedClass>(
       "SerializedClass",
       hydrate: (s) => SerializedClass.fromJSON(s),
       persist: (c) => c.toJSON(),
+      onHydrate: () => completer.complete(),
     );
 
     final second = SerializedClass(false, 42);
@@ -61,7 +61,7 @@ void main() {
     expect(subject.value, equals(null));
 
     /// properly hydrates
-    await subject.hydrate();
+    await completer.future;
     expect(subject.value.value, equals(true));
     expect(subject.value.count, equals(42));
 
@@ -101,15 +101,22 @@ class SerializedClass {
 
 /// The test procedure for a HydratedSubject
 Future<void> testHydrated<T>(
-  HydratedSubject<T> subject,
+  String key,
   T first,
   T second,
 ) async {
+  final completer = Completer();
+
+  final subject = HydratedSubject<T>(
+    key,
+    onHydrate: () => completer.complete(),
+  );
+
   /// null before hydrate
   expect(subject.value, equals(null));
 
   /// properly hydrates
-  await subject.hydrate();
+  await completer.future;
   expect(subject.value, equals(first));
 
   /// add values

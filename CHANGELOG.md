@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Hydrate is now automagical
+
 ## 1.1.0+4
 
 - Improved docs

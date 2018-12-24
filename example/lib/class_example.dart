@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   final String title;
+
   final count$ = HydratedSubject<SerializedClass>(
     "serialized-count",
     hydrate: (value) => SerializedClass.fromJSON(value),
@@ -29,8 +30,6 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.count$.hydrate();
-
     print('Serialized Hydrated Demo');
 
     return Scaffold(
