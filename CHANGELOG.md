@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Bump `shared_preferences` version to `^0.5.1`
+
 ## 1.2.1
 
 - Fix error thrown when onHydrate was null
