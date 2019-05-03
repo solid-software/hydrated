@@ -118,6 +118,9 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   /// Set and emit the new value
   set value(T newValue) => add(newValue);
 
+  @override
+  bool get hasValue => _wrapper.latestValue != null;
+
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
   /// Must be called to retreive values stored on the device.
