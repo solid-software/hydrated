@@ -114,14 +114,17 @@ Future<void> testHydrated<T>(
 
   /// null before hydrate
   expect(subject.value, equals(null));
+  expect(subject.hasValue, equals(false));
 
   /// properly hydrates
   await completer.future;
   expect(subject.value, equals(first));
+  expect(subject.hasValue, equals(true));
 
   /// add values
   subject.add(second);
   expect(subject.value, equals(second));
+  expect(subject.hasValue, equals(true));
 
   /// check value in store
   final prefs = await SharedPreferences.getInstance();
