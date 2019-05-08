@@ -1,3 +1,7 @@
+## 1.2.3
+
+- Bump `rx_dart` version to `^0.21.0` (thanks to `ccadieux`!)
+
 ## 1.2.2
 
 - Bump `shared_preferences` version to `^0.5.1`
