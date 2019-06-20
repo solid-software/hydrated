@@ -1,6 +1,6 @@
 name: hydrated
 description: An automatically persisted BehaviorSubject with simple hydration for Flutter. Intended for use with the BLoC pattern.
-version: 1.2.3
+version: 1.2.4
 author: Luke Pighetti <lukepighetti@gmail.com>
 homepage: https://github.com/lukepighetti/hydrated
 
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rxdart: ^0.21.0
+  rxdart: ^0.22.0
   shared_preferences: ^0.5.1
 
 dev_dependencies:

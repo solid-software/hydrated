@@ -1,5 +1,9 @@
 ## 1.2.3
 
+- Bump `rx_dart` version to `^0.22.0`
+
+## 1.2.3
+
 - Bump `rx_dart` version to `^0.21.0` (thanks to `ccadieux`!)
 
 ## 1.2.2
