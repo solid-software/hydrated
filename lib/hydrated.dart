@@ -128,8 +128,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     final prefs = await SharedPreferences.getInstance();
 
     var val;
-
-    if (T == int)
+    
+    if (this._hydrate != null)
+      val = this._hydrate(prefs.getString(this._key));
+    else if (T == int)
       val = prefs.getInt(this._key);
     else if (T == double)
       val = prefs.getDouble(this._key);
@@ -139,8 +141,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
       val = prefs.getString(this._key);
     else if ([""] is T)
       val = prefs.getStringList(this._key);
-    else if (this._hydrate != null)
-      val = this._hydrate(prefs.getString(this._key));
     else
       Exception(
         "HydratedSubject – shared_preferences returned an invalid type",
