@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/hydrate.iml" filepath="$PROJECT_DIR$/hydrate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hydrated.iml" filepath="$PROJECT_DIR$/hydrated.iml" />
     </modules>
   </component>
 </project>
