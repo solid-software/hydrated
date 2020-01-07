@@ -5,14 +5,14 @@ author: Luke Pighetti <lukepighetti@gmail.com>
 homepage: https://github.com/lukepighetti/hydrated
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  rxdart: ^0.22.0
-  shared_preferences: ^0.5.1
+  rxdart: ^0.23.1
+  shared_preferences: ^0.5.3
 
 dev_dependencies:
   flutter_test:
