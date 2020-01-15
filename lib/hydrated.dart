@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// A [BehaviorSubject] that automatically persists its values and hydrates on creation.
+/// A [Subject] that automatically persists its values and hydrates on creation.
 ///
 /// HydratedSubject supports serialized classes and [shared_preferences] types such as: `int`, `double`, `bool`, `String`, and `List<String>`
 ///
