@@ -36,7 +36,7 @@ import 'package:rxdart/rxdart.dart';
 ///   );
 /// ```
 
-class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
+class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   String _key;
   T _seedValue;
   _Wrapper<T> _wrapper;
@@ -52,7 +52,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
     this._persist,
     this._onHydrate,
     StreamController<T> controller,
-    Observable<T> observable,
+    Stream<T> observable,
     this._wrapper,
   ) : super(controller, observable) {
     _hydrateSubject();
@@ -93,10 +93,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
         persist,
         onHydrate,
         controller,
-        new Observable<T>.defer(
+        Rx.defer<T>(
             () => wrapper.latestValue == null
                 ? controller.stream
-                : new Observable<T>(controller.stream)
+                : controller.stream
                     .startWith(wrapper.latestValue),
             reusable: true),
         wrapper);
@@ -109,7 +109,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   }
 
   @override
-  ValueObservable<T> get stream => this;
+  ValueStream<T> get stream => this;
 
   /// Get the latest value emitted by the Subject
   @override
