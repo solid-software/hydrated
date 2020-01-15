@@ -1,4 +1,10 @@
-## 1.2.3
+## 1.2.5
+
+- Bump `rx_dart` version to `^0.22.0`
+- This breaks compotibility with Dart SDK < 2.6
+- Simple CI added to repository
+
+## 1.2.4
 
 - Bump `rx_dart` version to `^0.22.0`
 
