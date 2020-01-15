@@ -60,11 +60,11 @@ final user$ = HydratedSubject<User>(
 
 Hydrated is mock tested with all supported types and is dogfooded by its creator.
 
-<img alt="demo of Hydrated tests completing successfully" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/docs/tests.gif" width="600">
+<img alt="demo of Hydrated tests completing successfully" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/doc/tests.gif" width="600">
 
 ## Demo
 
-<img alt="demo of Hydrated BehaviorSubject between app restarts" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/docs/hydrated.gif" width="400">
+<img alt="demo of Hydrated BehaviorSubject between app restarts" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/doc/hydrated.gif" width="400">
 
 ## Contributing
 
