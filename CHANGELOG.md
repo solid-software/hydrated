@@ -1,3 +1,8 @@
+## 1.2.5+1
+
+- Fixed example warning with dummy method
+- Fixed pubspec.yaml conventions
+
 ## 1.2.5
 
 - Bump `rx_dart` version to `^0.22.0`
