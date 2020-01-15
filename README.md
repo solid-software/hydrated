@@ -4,7 +4,7 @@
 [![Build](https://img.shields.io/github/workflow/status/lukepighetti/hydrated/Flutter)](https://github.com/lukepighetti/hydrated/actions?query=Flutter)
 [![License](https://img.shields.io/github/license/lukepighetti/hydrated)](https://opensource.org/licenses/MIT)
 
-Hydrated provides a BehaviorSubject that automatically persists to Flutter's local storage and hydrates on creation!
+Hydrated provides a Subject that automatically persists to Flutter's local storage and hydrates on creation!
 
 ## Easy to consume
 
