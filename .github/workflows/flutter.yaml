@@ -1,0 +1,17 @@
+name:  Flutter
+on: [push,pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.12.13+hotfix.5'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter analyze
+      - name: Run tests
+        run: flutter test
