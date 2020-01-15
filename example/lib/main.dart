@@ -53,4 +53,6 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
+
+  void dispose() => count$.close();
 }
