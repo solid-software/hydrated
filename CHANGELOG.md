@@ -1,3 +1,7 @@
+## 1.2.5+2
+
+- Updated dependencies
+
 ## 1.2.5+1
 
 - Fixed example warning with dummy method
