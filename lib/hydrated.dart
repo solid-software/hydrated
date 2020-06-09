@@ -65,18 +65,28 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     _hydrateSubject();
   }
 
-  factory HydratedSubject(String key,
-      {T seedValue,
-      T Function(String value) hydrate,
-      String Function(T value) persist,
-      void onHydrate(),
-      void onListen(),
-      void onCancel(),
-      bool sync: false,
-      Future<SharedPreferences> prefsFuture}) {
+  factory HydratedSubject(
+    String key, {
+    T seedValue,
+    T Function(String value) hydrate,
+    String Function(T value) persist,
+    void onHydrate(),
+    void onListen(),
+    void onCancel(),
+    bool sync: false,
+
+    /// Provide a custom wrapper for [SharedPreferences].
+    /// If this argument if omitted, the Subject will use the default [SharedPreferences.getInstance]
+    Future<SharedPreferences> prefsFuture,
+  }) {
     // assert that T is a type compatible with shared_preferences,
     // or that we have hydrate and persist mapping functions
-    assert(T == int || T == double || T == bool || T == String || [""] is T || (hydrate != null && persist != null));
+    assert(T == int ||
+        T == double ||
+        T == bool ||
+        T == String ||
+        [""] is T ||
+        (hydrate != null && persist != null));
 
     // ignore: close_sinks
     final controller = new StreamController<T>.broadcast(
@@ -95,7 +105,9 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         onHydrate,
         controller,
         Rx.defer<T>(
-            () => wrapper.latestValue == null ? controller.stream : controller.stream.startWith(wrapper.latestValue),
+            () => wrapper.latestValue == null
+                ? controller.stream
+                : controller.stream.startWith(wrapper.latestValue),
             reusable: true),
         wrapper,
         prefsFuture);
