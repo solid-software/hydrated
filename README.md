@@ -6,6 +6,10 @@
 
 Hydrated provides a Subject that automatically persists to Flutter's local storage and hydrates on creation!
 
+## New maintainers
+
+`hydrated` is now maintained by [@solid-software](https://github.com/solid-software).
+
 ## Easy to consume
 
 All values are persisted with `shared_preferences` and restored with automatic hydration.
