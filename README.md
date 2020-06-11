@@ -6,9 +6,9 @@
 
 Hydrated provides a Subject that automatically persists to Flutter's local storage and hydrates on creation!
 
-## New maintainers
+## Original developer
 
-`hydrated` is now maintained by [@solid-software](https://github.com/solid-software).
+`hydrated` was originally developed by [@lukepighetti](https://github.com/lukepighetti).
 
 ## Easy to consume
 
