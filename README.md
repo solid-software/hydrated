@@ -6,6 +6,7 @@
 
 Hydrated provides a Subject that automatically persists to Flutter's local storage and hydrates on creation!
 
+
 ## Easy to consume
 
 All values are persisted with `shared_preferences` and restored with automatic hydration.
@@ -60,12 +61,10 @@ final user$ = HydratedSubject<User>(
 
 Hydrated is mock tested with all supported types and is dogfooded by its creator.
 
-<img alt="demo of Hydrated tests completing successfully" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/doc/tests.gif" width="600">
-
 ## Demo
 
 <img alt="demo of Hydrated BehaviorSubject between app restarts" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/doc/hydrated.gif" width="400">
 
-## Contributing
+## Original developer
 
-The goal of Hydrated is to make persistence of BLoC classes as simple as possible for Flutter projects. PRs are welcome, but be warned that I am committed to simplicity.
+`hydrated` was originally developed by [@lukepighetti](https://github.com/lukepighetti).
