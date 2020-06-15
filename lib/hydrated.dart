@@ -36,7 +36,7 @@ import 'package:rxdart/rxdart.dart';
 ///   );
 /// ```
 
-class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
+class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   String _key;
   T _seedValue;
   _Wrapper<T> _wrapper;
@@ -58,7 +58,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     this._persist,
     this._onHydrate,
     StreamController<T> controller,
-    Stream<T> observable,
+    Observable<T> observable,
     this._wrapper,
     this._prefsFutureOverride,
   ) : super(controller, observable) {
@@ -81,12 +81,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   }) {
     // assert that T is a type compatible with shared_preferences,
     // or that we have hydrate and persist mapping functions
-    assert(T == int ||
-        T == double ||
-        T == bool ||
-        T == String ||
-        [""] is T ||
-        (hydrate != null && persist != null));
+    assert(T == int || T == double || T == bool || T == String || [""] is T || (hydrate != null && persist != null));
 
     // ignore: close_sinks
     final controller = new StreamController<T>.broadcast(
@@ -104,10 +99,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         persist,
         onHydrate,
         controller,
-        Rx.defer<T>(
+        new Observable<T>.defer(
             () => wrapper.latestValue == null
                 ? controller.stream
-                : controller.stream.startWith(wrapper.latestValue),
+                : new Observable<T>(controller.stream).startWith(wrapper.latestValue),
             reusable: true),
         wrapper,
         prefsFuture);
@@ -120,7 +115,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   }
 
   @override
-  ValueStream<T> get stream => this;
+  ValueObservable<T> get stream => this;
 
   /// Get the latest value emitted by the Subject
   @override
