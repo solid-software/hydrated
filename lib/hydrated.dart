@@ -36,7 +36,7 @@ import 'package:rxdart/rxdart.dart';
 ///   );
 /// ```
 
-class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
+class HydratedSubject<T> extends Subject<T> implements ValueObservable<T> {
   String _key;
   T _seedValue;
   _Wrapper<T> _wrapper;
@@ -45,6 +45,12 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   String Function(T value) _persist;
   void Function() _onHydrate;
 
+  final Future<SharedPreferences> _prefsFutureOverride;
+
+  Future<SharedPreferences> get _prefsFuture async {
+    return _prefsFutureOverride ?? SharedPreferences.getInstance();
+  }
+
   HydratedSubject._(
     this._key,
     this._seedValue,
@@ -52,8 +58,9 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     this._persist,
     this._onHydrate,
     StreamController<T> controller,
-    Stream<T> observable,
+    Observable<T> observable,
     this._wrapper,
+    this._prefsFutureOverride,
   ) : super(controller, observable) {
     _hydrateSubject();
   }
@@ -67,15 +74,14 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     void onListen(),
     void onCancel(),
     bool sync: false,
+
+    /// Provide a custom wrapper for [SharedPreferences].
+    /// If this argument if omitted, the Subject will use the default [SharedPreferences.getInstance]
+    Future<SharedPreferences> prefsFuture,
   }) {
     // assert that T is a type compatible with shared_preferences,
     // or that we have hydrate and persist mapping functions
-    assert(T == int ||
-        T == double ||
-        T == bool ||
-        T == String ||
-        [""] is T ||
-        (hydrate != null && persist != null));
+    assert(T == int || T == double || T == bool || T == String || [""] is T || (hydrate != null && persist != null));
 
     // ignore: close_sinks
     final controller = new StreamController<T>.broadcast(
@@ -93,13 +99,13 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         persist,
         onHydrate,
         controller,
-        Rx.defer<T>(
+        new Observable<T>.defer(
             () => wrapper.latestValue == null
                 ? controller.stream
-                : controller.stream
-                    .startWith(wrapper.latestValue),
+                : new Observable<T>(controller.stream).startWith(wrapper.latestValue),
             reusable: true),
-        wrapper);
+        wrapper,
+        prefsFuture);
   }
 
   @override
@@ -109,7 +115,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   }
 
   @override
-  ValueStream<T> get stream => this;
+  ValueObservable<T> get stream => this;
 
   /// Get the latest value emitted by the Subject
   @override
@@ -125,10 +131,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   ///
   /// Must be called to retreive values stored on the device.
   Future<void> _hydrateSubject() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefsFuture;
 
     var val;
-    
+
     if (this._hydrate != null)
       val = this._hydrate(prefs.getString(this._key));
     else if (T == int)
@@ -158,7 +164,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   }
 
   _persistValue(T val) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefsFuture;
 
     if (val is int)
       await prefs.setInt(_key, val);
