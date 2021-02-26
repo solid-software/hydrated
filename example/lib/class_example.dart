@@ -48,7 +48,7 @@ class MyHomePage extends StatelessWidget {
                   ),
                   Text(
                     '${snap.data.count}',
-                    style: Theme.of(context).textTheme.display1,
+                    style: Theme.of(context).textTheme.headline4,
                   ),
                 ],
               ),

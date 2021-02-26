@@ -40,7 +40,7 @@ class MyHomePage extends StatelessWidget {
                   ),
                   Text(
                     '${snap.data}',
-                    style: Theme.of(context).textTheme.display1,
+                    style: Theme.of(context).textTheme.headline4,
                   ),
                 ],
               ),
