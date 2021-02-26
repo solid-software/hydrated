@@ -1,11 +1,9 @@
 import 'dart:async';
-
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   SharedPreferences.setMockInitialValues({
@@ -51,7 +49,7 @@ void main() {
     final subject = HydratedSubject<SerializedClass>(
       "SerializedClass",
       hydrate: (s) => SerializedClass.fromJSON(s),
-      persist: (c) => c.toJSON(),
+      persist: (c) => c == null ? '' : c.toJSON(),
       onHydrate: () => completer.complete(),
     );
 
@@ -62,13 +60,13 @@ void main() {
 
     /// properly hydrates
     await completer.future;
-    expect(subject.value.value, equals(true));
-    expect(subject.value.count, equals(42));
+    expect(subject.value?.value, equals(true));
+    expect(subject.value?.count, equals(42));
 
     /// add values
     subject.add(second);
-    expect(subject.value.value, equals(false));
-    expect(subject.value.count, equals(42));
+    expect(subject.value?.value, equals(false));
+    expect(subject.value?.count, equals(42));
 
     /// check value in store
     final prefs = await SharedPreferences.getInstance();
@@ -81,8 +79,8 @@ void main() {
 
 /// An example of a class that serializes to and from a string
 class SerializedClass {
-  bool value;
-  int count;
+  late final bool value;
+  late final int count;
 
   SerializedClass(this.value, this.count);
 
@@ -94,8 +92,8 @@ class SerializedClass {
   }
 
   String toJSON() => jsonEncode({
-        "value": this.value,
-        "count": this.count,
+        'value': this.value,
+        'count': this.count,
       });
 }
 
