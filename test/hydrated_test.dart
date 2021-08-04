@@ -56,7 +56,7 @@ void main() {
     final second = SerializedClass(false, 42);
 
     /// null before hydrate
-    expect(subject.value, equals(null));
+    expect(subject.valueOrNull, equals(null));
 
     /// properly hydrates
     await completer.future;
@@ -111,7 +111,7 @@ Future<void> testHydrated<T>(
   );
 
   /// null before hydrate
-  expect(subject.value, equals(null));
+  expect(subject.valueOrNull, equals(null));
   expect(subject.hasValue, equals(false));
 
   /// properly hydrates
