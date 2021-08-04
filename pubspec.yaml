@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rxdart: ^0.26.0-nullsafety.1
+  rxdart: ^0.27.0
   shared_preferences: ^2.0.1
 
 dev_dependencies:

@@ -60,13 +60,13 @@ void main() {
 
     /// properly hydrates
     await completer.future;
-    expect(subject.value?.value, equals(true));
-    expect(subject.value?.count, equals(42));
+    expect(subject.value.value, equals(true));
+    expect(subject.value.count, equals(42));
 
     /// add values
     subject.add(second);
-    expect(subject.value?.value, equals(false));
-    expect(subject.value?.count, equals(42));
+    expect(subject.value.value, equals(false));
+    expect(subject.value.count, equals(42));
 
     /// check value in store
     final prefs = await SharedPreferences.getInstance();

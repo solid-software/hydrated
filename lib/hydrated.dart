@@ -49,7 +49,7 @@ typedef PersistCallback<T> = String? Function(T);
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   String _key;
   T? _seedValue;
-  _Wrapper<T> _wrapper;
+  _Wrapper<T>? _wrapper;
 
   final HydrateCallback<T>? _hydrate;
   final PersistCallback<T?>? _persist;
@@ -94,8 +94,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       sync: sync,
     );
 
-    final wrapper = _Wrapper<T>();
-    if (seedValue != null) wrapper.setValue(seedValue);
+    final wrapper = seedValue != null ? _Wrapper<T>(value: seedValue) : null;
 
     return HydratedSubject<T>._(
         key,
@@ -105,32 +104,49 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         onHydrate,
         controller,
         Rx.defer<T>(
-            () => wrapper.latestValue?.value == null
+            () => wrapper == null
                 ? controller.stream
-                : controller.stream.startWith(wrapper.latestValue!.value!),
+                : controller.stream.startWith(wrapper.value!),
             reusable: true),
         wrapper);
   }
 
   @override
-  void onAdd(T? event) {
-    _wrapper = _Wrapper<T>();
-    if (event != null) {
-      _wrapper.setValue(event);
-    }
+  void onAdd(T event) {
+    _wrapper = _Wrapper<T>(value: event);
     _persistValue(event);
   }
 
   @override
   ValueStream<T> get stream => this;
 
+  @override
+  bool get hasValue => _wrapper?.value != null;
+
+  @override
+  T? get valueOrNull => _wrapper?.value;
+
   /// Get the latest value emitted by the Subject
-  T? get value => valueWrapper?.value;
+  @override
+  T get value =>
+      hasValue ? _wrapper!.value! : throw ValueStreamError.hasNoValue();
 
   /// Set and emit the new value
-  set value(T? newValue) => onAdd(newValue);
+  set value(T newValue) => onAdd(newValue);
 
-  bool get hasValue => value != null;
+  @override
+  Object get error => hasError
+      ? _wrapper!.errorAndStackTrace!
+      : throw ValueStreamError.hasNoError();
+
+  @override
+  Object? get errorOrNull => _wrapper?.errorAndStackTrace;
+
+  @override
+  bool get hasError => _wrapper?.errorAndStackTrace != null;
+
+  @override
+  StackTrace? get stackTrace => _wrapper?.errorAndStackTrace?.stackTrace;
 
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
@@ -192,10 +208,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     } else {
       final error = Exception(
         'HydratedSubject – value must be int, '
-            'double, bool, String, or List<String>',
+        'double, bool, String, or List<String>',
       );
       final errorAndTrace = ErrorAndStackTrace(error, StackTrace.current);
-      _wrapper.setError(errorAndTrace);
+      _wrapper = _Wrapper(errorAndStackTrace: errorAndTrace);
     }
   }
 
@@ -220,26 +236,14 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       persist: persist,
     );
   }
-
-  @override
-  ErrorAndStackTrace? get errorAndStackTrace =>
-      _wrapper.latestErrorAndStackTrace;
-
-  @override
-  ValueWrapper<T>? get valueWrapper => _wrapper.latestValue;
 }
 
 class _Wrapper<T> {
-  ValueWrapper<T>? latestValue;
-  ErrorAndStackTrace? latestErrorAndStackTrace;
+  _Wrapper({
+    this.value = null,
+    this.errorAndStackTrace = null,
+  });
 
-  void setValue(T event) {
-    latestValue = ValueWrapper(event);
-    latestErrorAndStackTrace = null;
-  }
-
-  void setError(Object error, [StackTrace? stackTrace]) {
-    latestValue = null;
-    latestErrorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
-  }
+  final T? value;
+  final ErrorAndStackTrace? errorAndStackTrace;
 }
