@@ -240,8 +240,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
 class _Wrapper<T> {
   _Wrapper({
-    this.value = null,
-    this.errorAndStackTrace = null,
+    this.value,
+    this.errorAndStackTrace,
   });
 
   final T? value;
