@@ -24,9 +24,13 @@ typedef HydrateCallback<T> = T Function(String);
 /// - `String`
 /// - `List<String>`.
 ///
-/// Serialized classes are supported by using the
-/// `hydrate: (String)=>Class` and
-/// `persist: (Class)=>String` constructor arguments.
+/// Serialized classes are supported by using the following `hydrate` and
+/// `persist` combination: 
+/// 
+/// ```
+/// hydrate: (String)=>Class
+/// persist: (Class)=>String
+/// ```
 ///
 /// Example:
 ///
