@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'src/subject_value_wrapper.dart';
+
 typedef _VoidCallback = void Function();
 
 typedef HydrateCallback<T> = T Function(String);
@@ -49,7 +51,7 @@ typedef PersistCallback<T> = String? Function(T);
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   String _key;
   T? _seedValue;
-  _Wrapper<T>? _wrapper;
+  SubjectValueWrapper<T>? _wrapper;
 
   final HydrateCallback<T>? _hydrate;
   final PersistCallback<T?>? _persist;
@@ -94,7 +96,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       sync: sync,
     );
 
-    final wrapper = seedValue != null ? _Wrapper<T>(value: seedValue) : null;
+    final wrapper = seedValue != null ? SubjectValueWrapper<T>(value: seedValue) : null;
 
     return HydratedSubject<T>._(
         key,
@@ -113,7 +115,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   void onAdd(T event) {
-    _wrapper = _Wrapper<T>(value: event);
+    _wrapper = SubjectValueWrapper<T>(value: event);
     _persistValue(event);
   }
 
@@ -211,7 +213,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         'double, bool, String, or List<String>',
       );
       final errorAndTrace = ErrorAndStackTrace(error, StackTrace.current);
-      _wrapper = _Wrapper(errorAndStackTrace: errorAndTrace);
+      _wrapper = SubjectValueWrapper(errorAndStackTrace: errorAndTrace);
     }
   }
 
@@ -236,14 +238,4 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       persist: persist,
     );
   }
-}
-
-class _Wrapper<T> {
-  _Wrapper({
-    this.value,
-    this.errorAndStackTrace,
-  });
-
-  final T? value;
-  final ErrorAndStackTrace? errorAndStackTrace;
 }
