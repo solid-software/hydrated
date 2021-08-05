@@ -19,14 +19,17 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   final String title;
 
-  final count$ = HydratedSubject<SerializedClass>(
+  final countSubject = HydratedSubject<SerializedClass>(
     "serialized-count",
     hydrate: (value) => SerializedClass.fromJSON(value),
     persist: (value) => value.toJSON,
     seedValue: SerializedClass(0),
   );
 
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,38 +41,38 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Center(
         child: StreamBuilder<SerializedClass>(
-          stream: count$,
-          initialData: count$.value,
-          builder: (context, snap) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'You have pushed the button this many times:',
-                  ),
-                  Text(
-                    '${snap.data.count}',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                ],
+          stream: countSubject,
+          initialData: countSubject.value,
+          builder: (context, snapshot) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('You have pushed the button this many times:'),
+              Text(
+                '${snapshot.data?.count}',
+                style: Theme.of(context).textTheme.headline4,
               ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final count = count$.value.count + 1;
-          count$.add(SerializedClass(count));
-        },
+        onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  void _incrementCounter() {
+    final count = countSubject.value.count + 1;
+    countSubject.add(SerializedClass(count));
   }
 }
 
 class SerializedClass {
   final int count;
 
-  SerializedClass(this.count);
+  const SerializedClass(this.count);
 
   SerializedClass.fromJSON(String json) : this.count = int.parse(json);
 

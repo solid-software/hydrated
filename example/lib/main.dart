@@ -18,9 +18,12 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   final String title;
-  final count$ = HydratedSubject<int>("count", seedValue: 0);
+  final count = HydratedSubject<int>("count", seedValue: 0);
 
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,29 +33,35 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Center(
         child: StreamBuilder<int>(
-          stream: count$,
-          initialData: count$.value,
+          stream: count,
+          initialData: count.value,
           builder: (context, snap) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'You have pushed the button this many times:',
-                  ),
-                  Text(
-                    '${snap.data}',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'You have pushed the button this many times:',
               ),
+              Text(
+                '${snap.data}',
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => count$.value++,
+        onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
     );
   }
 
-  void dispose() => count$.close();
+  void _incrementCounter() {
+    count.value++;
+  }
+
+  void dispose() {
+    count.close();
+  }
 }
