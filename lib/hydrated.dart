@@ -8,8 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/subject_value_wrapper.dart';
 
-typedef HydrateCallback<T> = T Function(String);
+/// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
+
+/// A callback for reconstructing an instance of a data class from a String.
+typedef HydrateCallback<T> = T Function(String);
 
 /// A [Subject] that automatically persists its values and hydrates on creation.
 ///
@@ -24,13 +27,13 @@ typedef PersistCallback<T> = String? Function(T);
 /// Example:
 ///
 /// ```
-///   final count$ = HydratedSubject<int>("count", seedValue: 0);
+///   final count = HydratedSubject<int>("count", seedValue: 0);
 /// ```
 ///
 /// Serialized class example:
 ///
 /// ```
-///   final user$ = HydratedSubject<User>(
+///   final user = HydratedSubject<User>(
 ///     "user",
 ///     hydrate: (String s) => User.fromJSON(s),
 ///     persist: (User user) => user.toJSON(),
@@ -42,9 +45,9 @@ typedef PersistCallback<T> = String? Function(T);
 /// The `onHydrate` callback is called when hydration is complete.
 ///
 /// ```
-///   final user$ = HydratedSubject<int>(
+///   final user = HydratedSubject<int>(
 ///     "count",
-///     onHydrate: () => loading$.add(false),
+///     onHydrate: () => loading.add(false),
 ///   );
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
