@@ -38,9 +38,7 @@ class MyHomePage extends StatelessWidget {
           builder: (context, snap) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'You have pushed the button this many times:',
-              ),
+              Text('You have pushed the button this many times:'),
               Text(
                 '${snap.data}',
                 style: Theme.of(context).textTheme.headline4,
