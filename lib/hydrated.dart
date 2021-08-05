@@ -16,9 +16,13 @@ typedef HydrateCallback<T> = T Function(String);
 
 /// A [Subject] that automatically persists its values and hydrates on creation.
 ///
-/// HydratedSubject supports serialized classes
-/// and [shared_preferences] types such as:
-/// `int`, `double`, `bool`, `String`, and `List<String>`
+/// HydratedSubject supports serialized classes and [shared_preferences] types
+/// such as:
+/// - `int`
+/// - `double`
+/// - `bool`
+/// - `String`
+/// - `List<String>`.
 ///
 /// Serialized classes are supported by using the
 /// `hydrate: (String)=>Class` and
