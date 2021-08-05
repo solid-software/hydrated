@@ -54,7 +54,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   SubjectValueWrapper<T>? _wrapper;
 
   final HydrateCallback<T>? _hydrate;
-  final PersistCallback<T?>? _persist;
+  final PersistCallback<T>? _persist;
   void Function()? _onHydrate;
 
   HydratedSubject._(
@@ -74,7 +74,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     String key, {
     T? seedValue,
     HydrateCallback<T>? hydrate,
-    PersistCallback<T?>? persist,
+    PersistCallback<T>? persist,
     _VoidCallback? onHydrate,
     _VoidCallback? onListen,
     _VoidCallback? onCancel,
@@ -187,19 +187,19 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     _onHydrate?.call();
   }
 
-  void _persistValue(T? val) async {
+  void _persistValue(T val) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (val is int)
-      await prefs.setInt(_key, val as int);
+      await prefs.setInt(_key, val);
     else if (val is double)
-      await prefs.setDouble(_key, val as double);
+      await prefs.setDouble(_key, val);
     else if (val is bool)
-      await prefs.setBool(_key, val as bool);
+      await prefs.setBool(_key, val);
     else if (val is String)
-      await prefs.setString(_key, val as String);
+      await prefs.setString(_key, val);
     else if (val is List<String>)
-      await prefs.setStringList(_key, val as List<String>);
+      await prefs.setStringList(_key, val);
     else if (_persist != null) {
       final encoded = _persist!(val);
       if (encoded != null) {
