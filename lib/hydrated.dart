@@ -2,12 +2,11 @@ library hydrated;
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/subject_value_wrapper.dart';
-
-typedef _VoidCallback = void Function();
 
 typedef HydrateCallback<T> = T Function(String);
 typedef PersistCallback<T> = String? Function(T);
@@ -49,13 +48,14 @@ typedef PersistCallback<T> = String? Function(T);
 ///   );
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
-  String _key;
-  T? _seedValue;
-  SubjectValueWrapper<T>? _wrapper;
-
+  final String _key;
   final HydrateCallback<T>? _hydrate;
   final PersistCallback<T>? _persist;
-  void Function()? _onHydrate;
+  final VoidCallback? _onHydrate;
+  final T? _seedValue;
+  final StreamController<T> _controller;
+
+  SubjectValueWrapper<T>? _wrapper;
 
   HydratedSubject._(
     this._key,
@@ -63,10 +63,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     this._hydrate,
     this._persist,
     this._onHydrate,
-    StreamController<T> controller,
+    this._controller,
     Stream<T> observable,
-    this._wrapper,
-  ) : super(controller, observable) {
+    _wrapper,
+  ) : super(_controller, observable) {
     _hydrateSubject();
   }
 
@@ -75,37 +75,43 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     T? seedValue,
     HydrateCallback<T>? hydrate,
     PersistCallback<T>? persist,
-    _VoidCallback? onHydrate,
-    _VoidCallback? onListen,
-    _VoidCallback? onCancel,
+    VoidCallback? onHydrate,
+    VoidCallback? onListen,
+    VoidCallback? onCancel,
     bool sync: false,
   }) {
     // assert that T is a type compatible with shared_preferences,
     // or that we have hydrate and persist mapping functions
-    assert(T == int ||
-        T == double ||
-        T == bool ||
-        T == String ||
-        [""] is T ||
+    assert(_areTypesEqual<T, int>() ||
+        _areTypesEqual<T, int?>() ||
+        _areTypesEqual<T, double>() ||
+        _areTypesEqual<T, double?>() ||
+        _areTypesEqual<T, bool>() ||
+        _areTypesEqual<T, bool?>() ||
+        _areTypesEqual<T, String>() ||
+        _areTypesEqual<T, String?>() ||
+        _areTypesEqual<T, List<String>>() ||
+        _areTypesEqual<T, List<String>?>() ||
         (hydrate != null && persist != null));
 
     // ignore: close_sinks
-    final controller = StreamController<T>.broadcast(
+    final StreamController<T> controller = StreamController.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final wrapper = seedValue != null ? SubjectValueWrapper<T>(value: seedValue) : null;
+    final wrapper =
+        seedValue != null ? SubjectValueWrapper(value: seedValue) : null;
 
-    return HydratedSubject<T>._(
+    return HydratedSubject._(
         key,
         seedValue,
         hydrate,
         persist,
         onHydrate,
         controller,
-        Rx.defer<T>(
+        Rx.defer(
             () => wrapper == null
                 ? controller.stream
                 : controller.stream.startWith(wrapper.value!),
@@ -115,7 +121,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   void onAdd(T event) {
-    _wrapper = SubjectValueWrapper<T>(value: event);
+    _wrapper = SubjectValueWrapper(value: event);
     _persistValue(event);
   }
 
@@ -158,21 +164,22 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
     T? val;
 
-    if (this._hydrate != null) {
-      final String? persistedValue = prefs.getString(this._key);
+    if (_hydrate != null) {
+      final String? persistedValue = prefs.getString(_key);
       if (persistedValue != null) {
-        val = this._hydrate!(persistedValue);
+        val = _hydrate!(persistedValue);
       }
-    } else if (T == int)
-      val = prefs.getInt(this._key) as T;
-    else if (T == double)
-      val = prefs.getDouble(this._key) as T;
-    else if (T == bool)
-      val = prefs.getBool(this._key) as T;
-    else if (T == String)
-      val = prefs.getString(this._key) as T;
-    else if ([""] is T)
-      val = prefs.getStringList(this._key) as T;
+    } else if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>())
+      val = prefs.getInt(_key) as T;
+    else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>())
+      val = prefs.getDouble(_key) as T;
+    else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>())
+      val = prefs.getBool(_key) as T;
+    else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>())
+      val = prefs.getString(_key) as T;
+    else if (_areTypesEqual<T, List<String>>() ||
+        _areTypesEqual<T, List<String>?>())
+      val = prefs.getStringList(_key) as T;
     else
       Exception(
         'HydratedSubject – shared_preferences returned an invalid type',
@@ -181,7 +188,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     // do not hydrate if the store is empty or matches the seed value
     // TODO: allow writing of seedValue if it is intentional
     if (val != null && val != _seedValue) {
-      add(val);
+      _controller.add(val);
     }
 
     _onHydrate?.call();
@@ -219,12 +226,16 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   /// A unique key that references a storage container
   /// for a value persisted on the device.
-  String get key => this._key;
+  String get key => _key;
+
+  static bool _areTypesEqual<T1, T2>() {
+    return T1 == T2;
+  }
 
   @override
   Subject<R> createForwardingSubject<R>({
-    _VoidCallback? onListen,
-    _VoidCallback? onCancel,
+    VoidCallback? onListen,
+    VoidCallback? onCancel,
     bool sync = false,
     HydrateCallback<R>? hydrate,
     PersistCallback<R?>? persist,
