@@ -199,6 +199,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     // do not hydrate if the store is empty or matches the seed value
     // TODO: allow writing of seedValue if it is intentional
     if (val != null && val != _seedValue) {
+      _wrapper = SubjectValueWrapper(value: val);
       _controller.add(val);
     }
 
