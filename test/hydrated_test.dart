@@ -49,7 +49,7 @@ void main() {
     final subject = HydratedSubject<SerializedClass>(
       "SerializedClass",
       hydrate: (s) => SerializedClass.fromJSON(s),
-      persist: (c) => c == null ? '' : c.toJSON(),
+      persist: (c) => c.toJSON(),
       onHydrate: () => completer.complete(),
     );
 
@@ -79,16 +79,18 @@ void main() {
 
 /// An example of a class that serializes to and from a string
 class SerializedClass {
-  late final bool value;
-  late final int count;
+  final bool value;
+  final int count;
 
   SerializedClass(this.value, this.count);
 
-  SerializedClass.fromJSON(String s) {
+  factory SerializedClass.fromJSON(String s) {
     final map = jsonDecode(s);
 
-    this.value = map['value'];
-    this.count = map['count'];
+    return SerializedClass(
+      map['value'],
+      map['count'],
+    );
   }
 
   String toJSON() => jsonEncode({
