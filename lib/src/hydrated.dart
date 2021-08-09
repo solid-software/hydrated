@@ -1,12 +1,10 @@
-library hydrated;
-
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'src/model/subject_value_wrapper.dart';
+import 'model/subject_value_wrapper.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
