@@ -219,6 +219,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       await prefs.setString(_key, val);
     else if (val is List<String>)
       await prefs.setStringList(_key, val);
+    else if (val == null)
+      prefs.remove(_key);
     else if (_persist != null) {
       final encoded = _persist!(val);
       if (encoded != null) {
