@@ -181,16 +181,16 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         val = _hydrate!(persistedValue);
       }
     } else if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>())
-      val = prefs.getInt(_key) as T;
+      val = prefs.getInt(_key) as T?;
     else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>())
-      val = prefs.getDouble(_key) as T;
+      val = prefs.getDouble(_key) as T?;
     else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>())
-      val = prefs.getBool(_key) as T;
+      val = prefs.getBool(_key) as T?;
     else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>())
-      val = prefs.getString(_key) as T;
+      val = prefs.getString(_key) as T?;
     else if (_areTypesEqual<T, List<String>>() ||
         _areTypesEqual<T, List<String>?>())
-      val = prefs.getStringList(_key) as T;
+      val = prefs.getStringList(_key) as T?;
     else
       Exception(
         'HydratedSubject – shared_preferences returned an invalid type',
