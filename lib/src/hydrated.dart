@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:hydrated/src/utils/typing_utils.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,6 +58,9 @@ typedef HydrateCallback<T> = T Function(String);
 ///   );
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
+  static final bool Function<T1, T2>() _areTypesEqual =
+      TypingUtils.areTypesEqual;
+
   final String _key;
   final HydrateCallback<T>? _hydrate;
   final PersistCallback<T>? _persist;
@@ -238,11 +242,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       final errorAndTrace = ErrorAndStackTrace(error, StackTrace.current);
       _wrapper = SubjectValueWrapper(errorAndStackTrace: errorAndTrace);
     }
-  }
-
-
-  static bool _areTypesEqual<T1, T2>() {
-    return T1 == T2;
   }
 
   @override
