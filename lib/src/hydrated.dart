@@ -128,6 +128,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         wrapper);
   }
 
+  /// A unique key that references a storage container
+  /// for a value persisted on the device.
+  String get key => _key;
+
   @override
   void onAdd(T event) {
     _wrapper = SubjectValueWrapper(value: event);
@@ -236,9 +240,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     }
   }
 
-  /// A unique key that references a storage container
-  /// for a value persisted on the device.
-  String get key => _key;
 
   static bool _areTypesEqual<T1, T2>() {
     return T1 == T2;
