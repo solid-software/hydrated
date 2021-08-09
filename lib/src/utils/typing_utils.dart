@@ -1,6 +1,4 @@
-typedef TypeComparisonFunction = bool Function<T1, T2>();
-
-class TypingUtils {
+class TypeUtils {
   static bool areTypesEqual<T1, T2>() {
     return T1 == T2;
   }
