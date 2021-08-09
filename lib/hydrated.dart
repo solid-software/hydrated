@@ -151,7 +151,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       hasValue ? _wrapper!.value! : throw ValueStreamError.hasNoValue();
 
   /// Set and emit the new value
-  set value(T newValue) => onAdd(newValue);
+  set value(T newValue) => add(newValue);
 
   @override
   Object get error => hasError
