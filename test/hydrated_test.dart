@@ -6,14 +6,16 @@ import 'package:hydrated/hydrated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  SharedPreferences.setMockInitialValues({
-    "flutter.prefs": true,
-    "flutter.int": 1,
-    "flutter.double": 1.1,
-    "flutter.bool": true,
-    "flutter.String": "first",
-    "flutter.List<String>": ["a", "b"],
-    "flutter.SerializedClass": '{"value":true,"count":42}'
+  setUp(() {
+    SharedPreferences.setMockInitialValues({
+      "flutter.prefs": true,
+      "flutter.int": 1,
+      "flutter.double": 1.1,
+      "flutter.bool": true,
+      "flutter.String": "first",
+      "flutter.List<String>": ["a", "b"],
+      "flutter.SerializedClass": '{"value":true,"count":42}'
+    });
   });
 
   test('shared preferences', () async {
@@ -73,6 +75,39 @@ void main() {
     expect(prefs.get(subject.key), equals('{"value":false,"count":42}'));
 
     /// clean up
+    subject.close();
+  });
+
+  test('Listener BehaviorSubject behavior', () async {
+    final completer = Completer();
+
+    final subject = HydratedSubject<SerializedClass>(
+      "SerializedClass",
+      hydrate: (s) => SerializedClass.fromJSON(s),
+      persist: (c) => c.toJSON(),
+      onHydrate: () => completer.complete(),
+    );
+
+    await completer.future;
+
+    expect(
+        subject.stream,
+        emits(
+          isA<SerializedClass>().having((c) => c.value, 'value', isTrue),
+        ));
+
+
+    final expectation = expectLater(
+        subject.stream,
+        emitsInOrder([
+          isA<SerializedClass>().having((c) => c.value, 'value', isTrue),
+          isA<SerializedClass>().having((c) => c.value, 'value', isFalse),
+        ]));
+
+    final second = SerializedClass(false, 42);
+    subject.add(second);
+
+    await expectation;
     subject.close();
   });
 }
