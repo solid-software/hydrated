@@ -25,8 +25,8 @@ typedef HydrateCallback<T> = T Function(String);
 /// - `List<String>`.
 ///
 /// Serialized classes are supported by using the following `hydrate` and
-/// `persist` combination: 
-/// 
+/// `persist` combination:
+///
 /// ```
 /// hydrate: (String)=>Class
 /// persist: (Class)=>String
