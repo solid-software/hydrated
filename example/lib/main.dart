@@ -17,24 +17,25 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final String title;
-  final count = HydratedSubject<int>("count", seedValue: 0);
+  final String _title;
+  final _count = HydratedSubject<int>("count", seedValue: 0);
 
   MyHomePage({
     Key? key,
-    required this.title,
-  }) : super(key: key);
+    required String title,
+  })  : _title = title,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        title: Text(this._title),
       ),
       body: Center(
         child: StreamBuilder<int>(
-          stream: count,
-          initialData: count.value,
+          stream: _count,
+          initialData: _count.value,
           builder: (context, snap) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -56,10 +57,10 @@ class MyHomePage extends StatelessWidget {
   }
 
   void _incrementCounter() {
-    count.value++;
+    _count.value++;
   }
 
   void dispose() {
-    count.close();
+    _count.close();
   }
 }

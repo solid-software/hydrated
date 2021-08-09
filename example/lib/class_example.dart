@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final String title;
+  final String _title;
 
-  final countSubject = HydratedSubject<SerializedClass>(
+  final _countSubject = HydratedSubject<SerializedClass>(
     "serialized-count",
     hydrate: (value) => SerializedClass.fromJSON(value),
     persist: (value) => value.toJSON,
@@ -28,8 +28,9 @@ class MyHomePage extends StatelessWidget {
 
   MyHomePage({
     Key? key,
-    required this.title,
-  }) : super(key: key);
+    required String title,
+  })  : _title = title,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +38,12 @@ class MyHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        title: Text(this._title),
       ),
       body: Center(
         child: StreamBuilder<SerializedClass>(
-          stream: countSubject,
-          initialData: countSubject.value,
+          stream: _countSubject,
+          initialData: _countSubject.value,
           builder: (context, snapshot) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -64,8 +65,8 @@ class MyHomePage extends StatelessWidget {
   }
 
   void _incrementCounter() {
-    final count = countSubject.value.count + 1;
-    countSubject.add(SerializedClass(count));
+    final count = _countSubject.value.count + 1;
+    _countSubject.add(SerializedClass(count));
   }
 }
 
