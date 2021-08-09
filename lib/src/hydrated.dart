@@ -58,7 +58,7 @@ typedef HydrateCallback<T> = T Function(String);
 ///   );
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
-  static final bool Function<T1, T2>() _areTypesEqual =
+  static final TypeComparisonFunction _areTypesEqual =
       TypingUtils.areTypesEqual;
 
   final String _key;
