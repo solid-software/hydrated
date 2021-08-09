@@ -76,7 +76,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     this._onHydrate,
     this._controller,
     Stream<T> observable,
-    _wrapper,
+    this._wrapper,
   ) : super(_controller, observable) {
     _hydrateSubject();
   }
