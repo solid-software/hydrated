@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Add null-safety support. Credits to @solid-yuriiprykhodko and @solid-vovabeloded.
+
 ## 1.2.5+2
 
 - Updated dependencies
