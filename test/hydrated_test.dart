@@ -20,7 +20,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     final value = prefs.getBool("prefs");
-    expect(value, equals(true));
+    expect(value, isTrue);
   });
 
   test('int', () async {
@@ -56,16 +56,16 @@ void main() {
     final second = SerializedClass(false, 42);
 
     /// null before hydrate
-    expect(subject.valueOrNull, equals(null));
+    expect(subject.valueOrNull, isNull);
 
     /// properly hydrates
     await completer.future;
-    expect(subject.value.value, equals(true));
+    expect(subject.value.value, isTrue);
     expect(subject.value.count, equals(42));
 
     /// add values
     subject.add(second);
-    expect(subject.value.value, equals(false));
+    expect(subject.value.value, isFalse);
     expect(subject.value.count, equals(42));
 
     /// check value in store
@@ -113,18 +113,18 @@ Future<void> testHydrated<T>(
   );
 
   /// null before hydrate
-  expect(subject.valueOrNull, equals(null));
-  expect(subject.hasValue, equals(false));
+  expect(subject.valueOrNull, isNull);
+  expect(subject.hasValue, isFalse);
 
   /// properly hydrates
   await completer.future;
   expect(subject.value, equals(first));
-  expect(subject.hasValue, equals(true));
+  expect(subject.hasValue, isTrue);
 
   /// add values
   subject.add(second);
   expect(subject.value, equals(second));
-  expect(subject.hasValue, equals(true));
+  expect(subject.hasValue, isTrue);
 
   /// check value in store
   final prefs = await SharedPreferences.getInstance();
