@@ -18,7 +18,6 @@ void main() {
     });
   });
 
-
   test('Shared Preferences set mock initial values', () async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -26,8 +25,7 @@ void main() {
     expect(value, isTrue);
   });
 
-  group('HydratedSubject', (){
-
+  group('HydratedSubject', () {
     group('correctly handles data type', () {
       test('int', () async {
         await testHydrated<int>("int", 1, 2);
@@ -84,15 +82,11 @@ void main() {
     });
   });
 
-
   test('HydratedSubject emits latest value into the new listener', () async {
-    final completer = Completer();
-
     final subject = HydratedSubject<SerializedClass>(
       "SerializedClass",
       hydrate: (s) => SerializedClass.fromJSON(s),
       persist: (c) => c.toJSON(),
-      onHydrate: () => completer.complete(),
     );
 
     await subject.first;
