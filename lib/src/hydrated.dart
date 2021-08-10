@@ -103,12 +103,26 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
     // ignore: close_sinks
     final subject = seedValue != null
-        ? BehaviorSubject<T>.seeded(seedValue,
-            onListen: onListen, onCancel: onCancel, sync: sync)
+        ? BehaviorSubject<T>.seeded(
+            seedValue,
+            onListen: onListen,
+            onCancel: onCancel,
+            sync: sync,
+          )
         : BehaviorSubject<T>(
-            onListen: onListen, onCancel: onCancel, sync: sync);
+            onListen: onListen,
+            onCancel: onCancel,
+            sync: sync,
+          );
+
     return HydratedSubject._(
-        key, seedValue, hydrate, persist, onHydrate, subject);
+      key,
+      seedValue,
+      hydrate,
+      persist,
+      onHydrate,
+      subject,
+    );
   }
 
   /// A unique key that references a storage container
@@ -117,7 +131,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   void onAdd(T event) {
-    _subject.value = event;
+    _subject.add(event);
     _persistValue(event);
   }
 
