@@ -149,7 +149,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   T get value => _subject.value;
 
   /// Set and emit the new value
-  set value(T newValue) => _subject.add(value);
+  set value(T newValue) => add(value);
 
   @override
   Object get error => _subject.error;
