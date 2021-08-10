@@ -13,6 +13,8 @@ typedef HydrateCallback<T> = T Function(String);
 
 /// A [Subject] that automatically persists its values and hydrates on creation.
 ///
+/// Mimics the behavior of [BehaviorSubject].
+///
 /// HydratedSubject supports serialized classes and [shared_preferences] types
 /// such as:
 /// - `int`
