@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Restore `BehaviorSubject` behavior of `HydratedSubject`.
+
 ## 2.0.0
 
 - Add null-safety support. Credits to @solid-yuriiprykhodko and @solid-vovabeloded.
@@ -14,7 +18,7 @@
 ## 1.2.5
 
 - Bump `rx_dart` version to `^0.22.0`
-- This breaks compotibility with Dart SDK < 2.6
+- This breaks compatibility with Dart SDK < 2.6
 - Simple CI added to repository
 
 ## 1.2.4
