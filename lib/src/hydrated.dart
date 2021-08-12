@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:hydrated/src/utils/typing_utils.dart';
+import 'package:hydrated/src/utils/type_utils.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'model/subject_value_wrapper.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
@@ -14,6 +12,8 @@ typedef PersistCallback<T> = String? Function(T);
 typedef HydrateCallback<T> = T Function(String);
 
 /// A [Subject] that automatically persists its values and hydrates on creation.
+///
+/// Mimics the behavior of a [BehaviorSubject].
 ///
 /// HydratedSubject supports serialized classes and [shared_preferences] types
 /// such as:
@@ -59,15 +59,12 @@ typedef HydrateCallback<T> = T Function(String);
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   static final _areTypesEqual = TypeUtils.areTypesEqual;
-
+  final BehaviorSubject<T> _subject;
   final String _key;
   final HydrateCallback<T>? _hydrate;
   final PersistCallback<T>? _persist;
   final VoidCallback? _onHydrate;
   final T? _seedValue;
-  final StreamController<T> _controller;
-
-  SubjectValueWrapper<T>? _wrapper;
 
   HydratedSubject._(
     this._key,
@@ -75,10 +72,8 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     this._hydrate,
     this._persist,
     this._onHydrate,
-    this._controller,
-    Stream<T> observable,
-    this._wrapper,
-  ) : super(_controller, observable) {
+    this._subject,
+  ) : super(_subject, _subject.stream) {
     _hydrateSubject();
   }
 
@@ -107,28 +102,27 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         (hydrate != null && persist != null));
 
     // ignore: close_sinks
-    final StreamController<T> controller = StreamController.broadcast(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: sync,
-    );
-
-    final wrapper =
-        seedValue != null ? SubjectValueWrapper(value: seedValue) : null;
+    final subject = seedValue != null
+        ? BehaviorSubject<T>.seeded(
+            seedValue,
+            onListen: onListen,
+            onCancel: onCancel,
+            sync: sync,
+          )
+        : BehaviorSubject<T>(
+            onListen: onListen,
+            onCancel: onCancel,
+            sync: sync,
+          );
 
     return HydratedSubject._(
-        key,
-        seedValue,
-        hydrate,
-        persist,
-        onHydrate,
-        controller,
-        Rx.defer(
-            () => wrapper == null
-                ? controller.stream
-                : controller.stream.startWith(wrapper.value!),
-            reusable: true),
-        wrapper);
+      key,
+      seedValue,
+      hydrate,
+      persist,
+      onHydrate,
+      subject,
+    );
   }
 
   /// A unique key that references a storage container
@@ -137,7 +131,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   void onAdd(T event) {
-    _wrapper = SubjectValueWrapper(value: event);
+    _subject.add(event);
     _persistValue(event);
   }
 
@@ -145,32 +139,29 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper?.value != null;
+  bool get hasValue => _subject.hasValue;
 
   @override
-  T? get valueOrNull => _wrapper?.value;
+  T? get valueOrNull => _subject.valueOrNull;
 
   /// Get the latest value emitted by the Subject
   @override
-  T get value =>
-      hasValue ? _wrapper!.value! : throw ValueStreamError.hasNoValue();
+  T get value => _subject.value;
 
   /// Set and emit the new value
-  set value(T newValue) => add(newValue);
+  set value(T newValue) => add(value);
 
   @override
-  Object get error => hasError
-      ? _wrapper!.errorAndStackTrace!
-      : throw ValueStreamError.hasNoError();
+  Object get error => _subject.error;
 
   @override
-  Object? get errorOrNull => _wrapper?.errorAndStackTrace;
+  Object? get errorOrNull => _subject.errorOrNull;
 
   @override
-  bool get hasError => _wrapper?.errorAndStackTrace != null;
+  bool get hasError => _subject.errorOrNull != null;
 
   @override
-  StackTrace? get stackTrace => _wrapper?.errorAndStackTrace?.stackTrace;
+  StackTrace? get stackTrace => _subject.stackTrace;
 
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
@@ -204,8 +195,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     // do not hydrate if the store is empty or matches the seed value
     // TODO: allow writing of seedValue if it is intentional
     if (val != null && val != _seedValue) {
-      _wrapper = SubjectValueWrapper(value: val);
-      _controller.add(val);
+      _subject.add(val);
     }
 
     _onHydrate?.call();
@@ -238,8 +228,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         'HydratedSubject – value must be int, '
         'double, bool, String, or List<String>',
       );
-      final errorAndTrace = ErrorAndStackTrace(error, StackTrace.current);
-      _wrapper = SubjectValueWrapper(errorAndStackTrace: errorAndTrace);
+      _subject.addError(error, StackTrace.current);
     }
   }
 
