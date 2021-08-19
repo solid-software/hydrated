@@ -41,31 +41,6 @@ void main() {
       test('List<String>', () async {
         _testPersistence<List<String>?>("List<String>", ["a", "b"], ["c", "d"]);
       });
-
-      test('SerializedClass', () async {
-        const key = 'SerializedClass';
-        final first = SerializedClass(true, 24);
-        _setMockPersistedValue(key, first.toJSON());
-
-        final persistence = SharedPreferencesPersistence<SerializedClass>(
-          key: key,
-          hydrate: (s) => SerializedClass.fromJSON(s),
-          persist: (c) => c.toJSON(),
-        );
-
-        final second = SerializedClass(false, 42);
-
-        /// restores from pre-existing persisted value
-        expect(await persistence.get(), equals(first));
-
-        /// persist a new value
-        persistence.put(second);
-        expect(await persistence.get(), equals(second));
-
-        /// check shared_preferences stored value
-        final prefs = await SharedPreferences.getInstance();
-        expect(prefs.get(key), equals('{"value":false,"count":42}'));
-      });
     });
   });
 }
@@ -107,25 +82,25 @@ Future<void> _testPersistence<T>(
   T first,
   T second,
 ) async {
-  final persistence = SharedPreferencesPersistence<T>(key: key);
+  final persistence = SharedPreferencesPersistence();
 
   /// null before setting anything
-  expect(await persistence.get(), isNull);
+  expect(await persistence.get<T>(key), isNull);
 
   _setMockPersistedValue(key, first);
 
   /// restores from pre-existing persisted value
-  expect(await persistence.get(), equals(first));
+  expect(await persistence.get<T>(key), equals(first));
 
   /// persists a new value
-  await persistence.put(second);
-  expect(await persistence.get(), equals(second));
+  await persistence.put(key, second);
+  expect(await persistence.get<T>(key), equals(second));
 
   /// check shared_preferences stored value
   final prefs = await SharedPreferences.getInstance();
   expect(prefs.get(key), equals(second));
 
   /// remove persisted value
-  await persistence.put(null as T);
-  expect(await persistence.get(), isNull);
+  await persistence.put(key, null as T);
+  expect(await persistence.get<T>(key), isNull);
 }
