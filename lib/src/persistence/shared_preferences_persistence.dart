@@ -44,11 +44,13 @@ class SharedPreferencesPersistence implements KeyValueStore {
   }
 
   @override
-  Future<void> put<T>(String key, T value) async {
+  Future<void> put<T>(String key, T? value) async {
     _assertSupportedType<T>();
     final prefs = await _getPrefs();
 
-    if (value is int)
+    if (value == null)
+      prefs.remove(key);
+    else if (value is int)
       await prefs.setInt(key, value);
     else if (value is double)
       await prefs.setDouble(key, value);
@@ -58,8 +60,6 @@ class SharedPreferencesPersistence implements KeyValueStore {
       await prefs.setString(key, value);
     else if (value is List<String>)
       await prefs.setStringList(key, value);
-    else if (value == null)
-      prefs.remove(key);
     else {
       throw PersistenceError(
         'HydratedSubject – value must be int, '
