@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:hydrated/src/persistence/key_value_store.dart';
-import 'package:hydrated/src/persistence/persistence_error.dart';
-import 'package:hydrated/src/persistence/shared_preferences_persistence.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'persistence/key_value_store.dart';
+import 'persistence/persistence_error.dart';
+import 'persistence/shared_preferences_persistence.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);

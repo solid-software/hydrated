@@ -1,8 +1,8 @@
-import 'package:hydrated/src/persistence/persistence_error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/type_utils.dart';
 import 'key_value_store.dart';
+import 'persistence_error.dart';
 
 /// An adapter for [SharedPreferences] persistence.
 ///
