@@ -2,7 +2,7 @@ import 'package:hydrated/src/persistence/persistence_error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/type_utils.dart';
-import 'generic_value_persistence.dart';
+import 'key_value_store.dart';
 
 /// An adapter for [SharedPreferences] persistence.
 ///
@@ -12,7 +12,7 @@ import 'generic_value_persistence.dart';
 /// - `bool`
 /// - `String`
 /// - `List<String>`.
-class SharedPreferencesPersistence implements GenericValuePersistence {
+class SharedPreferencesPersistence implements KeyValueStore {
   static final _areTypesEqual = TypeUtils.areTypesEqual;
 
   const SharedPreferencesPersistence();

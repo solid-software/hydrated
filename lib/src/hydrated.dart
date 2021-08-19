@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:hydrated/src/persistence/generic_value_persistence.dart';
+import 'package:hydrated/src/persistence/key_value_store.dart';
 import 'package:hydrated/src/persistence/persistence_error.dart';
 import 'package:hydrated/src/persistence/shared_preferences_persistence.dart';
 import 'package:rxdart/rxdart.dart';
@@ -16,7 +16,7 @@ typedef HydrateCallback<T> = T Function(String);
 ///
 /// Mimics the behavior of a [BehaviorSubject].
 ///
-/// The set of supported classes depends on the [GenericValuePersistence] implementation.
+/// The set of supported classes depends on the [KeyValueStore] implementation.
 /// For a list of types supported by default see [SharedPreferencesPersistence].
 ///
 /// Example:
@@ -53,7 +53,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   final VoidCallback? _onHydrate;
   final T? _seedValue;
 
-  final GenericValuePersistence _persistence;
+  final KeyValueStore _persistence;
 
   HydratedSubject._(
     this._key,
@@ -76,7 +76,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     VoidCallback? onListen,
     VoidCallback? onCancel,
     bool sync = false,
-    GenericValuePersistence persistence = const SharedPreferencesPersistence(),
+    KeyValueStore persistence = const SharedPreferencesPersistence(),
   }) {
     // ignore: close_sinks
     final subject = seedValue != null
