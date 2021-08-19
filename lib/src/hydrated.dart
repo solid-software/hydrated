@@ -47,15 +47,6 @@ typedef HydrateCallback<T> = T Function(String);
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   final BehaviorSubject<T> _subject;
-
-  @deprecated
-  // ignore: unused_field
-  final HydrateCallback<T>? _hydrate;
-
-  @deprecated
-  // ignore: unused_field
-  final PersistCallback<T>? _persist;
-
   final VoidCallback? _onHydrate;
   final T? _seedValue;
 
@@ -63,8 +54,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   HydratedSubject._(
     this._seedValue,
-    this._hydrate,
-    this._persist,
     this._onHydrate,
     this._subject,
     this._persistence,
@@ -72,34 +61,14 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     _hydrateSubject();
   }
 
-  factory HydratedSubject({
-    @Deprecated('`key` is deprecated. '
-        'Please use `persistence` for managing storage location.')
-        String? key,
+  factory HydratedSubject.custom({
+    required GenericValuePersistence<T> persistence,
     T? seedValue,
-    @Deprecated('`hydrate` callback is deprecated. '
-        'Please use `persistence` for storing structures.')
-        HydrateCallback<T>? hydrate,
-    @Deprecated('`persist` callback is deprecated. '
-        'Please use `persistence` for storing structures.')
-        PersistCallback<T>? persist,
-
-    /// An interface for persistent data storage.
-    ///
-    /// Defaults to [SharedPreferencesPersistence].
-    GenericValuePersistence<T>? persistence,
     VoidCallback? onHydrate,
     VoidCallback? onListen,
     VoidCallback? onCancel,
-    bool sync: false,
+    bool sync = false,
   }) {
-    final persistenceInterface = persistence ??
-        SharedPreferencesPersistence(
-          key: key!,
-          hydrate: hydrate,
-          persist: persist,
-        );
-
     // ignore: close_sinks
     final subject = seedValue != null
         ? BehaviorSubject<T>.seeded(
@@ -116,11 +85,34 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return HydratedSubject._(
       seedValue,
-      hydrate,
-      persist,
       onHydrate,
       subject,
-      persistenceInterface,
+      persistence,
+    );
+  }
+
+  factory HydratedSubject(
+    String key, {
+    T? seedValue,
+    HydrateCallback<T>? hydrate,
+    PersistCallback<T>? persist,
+    VoidCallback? onHydrate,
+    VoidCallback? onListen,
+    VoidCallback? onCancel,
+    bool sync: false,
+  }) {
+    final persistenceInterface = SharedPreferencesPersistence(
+      key: key,
+      hydrate: hydrate,
+      persist: persist,
+    );
+
+    return HydratedSubject.custom(
+      persistence: persistenceInterface,
+      onHydrate: onHydrate,
+      onCancel: onCancel,
+      onListen: onListen,
+      sync: sync,
     );
   }
 
@@ -191,14 +183,12 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     VoidCallback? onCancel,
     bool sync = false,
     GenericValuePersistence<R>? persistence,
-    HydrateCallback<R>? hydrate,
-    PersistCallback<R?>? persist,
   }) {
-    return HydratedSubject(
+    return HydratedSubject.custom(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
-      persistence: persistence,
+      persistence: persistence!,
     );
   }
 }

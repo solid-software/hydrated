@@ -20,11 +20,9 @@ class MyHomePage extends StatelessWidget {
   final String _title;
 
   final _countSubject = HydratedSubject<SerializedClass>(
-    persistence: SharedPreferencesPersistence(
-      key: "serialized-count",
-      hydrate: (value) => SerializedClass.fromJSON(value),
-      persist: (value) => value.toJSON,
-    ),
+    "serialized-count",
+    hydrate: (value) => SerializedClass.fromJSON(value),
+    persist: (value) => value.toJSON,
     seedValue: SerializedClass(0),
   );
 

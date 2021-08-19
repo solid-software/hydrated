@@ -18,10 +18,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   final String _title;
-  final _count = HydratedSubject<int>(
-    persistence: SharedPreferencesPersistence(key: "count"),
-    seedValue: 0,
-  );
+  final _count = HydratedSubject<int>("count", seedValue: 0);
 
   MyHomePage({
     Key? key,
