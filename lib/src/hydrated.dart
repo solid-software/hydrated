@@ -83,6 +83,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     bool sync = false,
     KeyValueStore persistence = const SharedPreferencesPersistence(),
   }) {
+    assert(
+        (hydrate == null && persist == null) ||
+            (hydrate != null && persist != null),
+        '`hydrate` and `persist` callbacks must both be present.');
     // ignore: close_sinks
     final subject = seedValue != null
         ? BehaviorSubject<T>.seeded(
