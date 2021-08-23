@@ -56,6 +56,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   final KeyValueStore _persistence;
 
+  /// A unique key that references a storage container
+  /// for a value persisted on the device.
+  String get key => _key;
+
   HydratedSubject._(
     this._key,
     this._seedValue,
