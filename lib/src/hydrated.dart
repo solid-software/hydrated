@@ -142,18 +142,16 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   @override
   StackTrace? get stackTrace => _subject.stackTrace;
 
-  bool get _doEncodePersistedValue => _hydrate != null && _persist != null;
-
   /// Hydrates the HydratedSubject with a value stored on the user's device.
   ///
   /// Must be called to retrieve values stored on the device.
   Future<void> _hydrateSubject() async {
     try {
       T? val;
-      if (_doEncodePersistedValue) {
-        final encodedValue = await _persistence.get<String>(_key);
-        if (encodedValue != null) {
-          val = _hydrate!(encodedValue);
+      if (_hydrate != null) {
+        final persistedValue = await _persistence.get<String>(_key);
+        if (persistedValue != null) {
+          val = _hydrate!(persistedValue);
         }
       } else {
         val = await _persistence.get<T>(_key);
@@ -174,7 +172,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   void _persistValue(T val) async {
     try {
       var persistedVal;
-      if (_doEncodePersistedValue) {
+      if (_persist != null) {
         persistedVal = _persist!(val);
         _persistence.put<String>(_key, persistedVal);
       } else {
