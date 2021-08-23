@@ -110,7 +110,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   void onAdd(T event) {
-    _subject.add(event);
     _persistValue(event);
   }
 
@@ -128,7 +127,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   T get value => _subject.value;
 
   /// Set and emit the new value
-  set value(T newValue) => add(value);
+  set value(T newValue) => add(newValue);
 
   @override
   Object get error => _subject.error;
@@ -154,7 +153,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
           val = _hydrate!(persistedValue);
         }
       } else {
-        val = await _persistence.get<T>(_key);
+        val = await _persistence.get<T?>(_key);
       }
 
       // do not hydrate if the store is empty or matches the seed value
