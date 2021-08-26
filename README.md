@@ -52,8 +52,8 @@ We also support serialized classes with `hydrate` and `persist` arguments.
 ```dart
 final user$ = HydratedSubject<User>(
   "user",
-  hydrate: (String s) => User.fromJSON(s),
-  persist: (User user) => user.toJSON(),
+  hydrate: (String s) => User.fromJson(s),
+  persist: (User user) => user.toJson(),
 );
 ```
 
@@ -74,7 +74,7 @@ class MyAwesomeKeyValueStore implements KeyValueStore {
 final user = HydratedSubject<User>(
   "user",
   hydrate: (String s) => User.fromJson(s),
-  persist: (User user) => user.toJSON(),
+  persist: (User user) => user.toJson(),
   keyValueStore: MyAwesomeKeyValueStore()
 );
 ```
