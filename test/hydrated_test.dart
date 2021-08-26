@@ -1,164 +1,212 @@
+// ignore_for_file: close_sinks
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+typedef _GetOverride = Future<dynamic> Function(String key);
+typedef _PutOverride = Future<void> Function(String key, dynamic value);
+
+class _InMemoryKeyValueStore implements KeyValueStore {
+  final Map<String, dynamic> store = {};
+
+  _GetOverride? getOverride;
+  @override
+  Future<T?> get<T>(String key) async {
+    if (getOverride != null) return getOverride!(key) as Future<T?>;
+    return store[key] as T?;
+  }
+
+  _PutOverride? putOverride;
+  @override
+  Future<void> put<T>(String key, T? value) async {
+    if (putOverride != null) {
+      putOverride!(key, value);
+      return;
+    }
+    store[key] = value;
+  }
+}
+
+class TestDataClass {
+  final int value;
+
+  TestDataClass(this.value);
+
+  static TestDataClass fromJson(Map<String, Object?> json) =>
+      TestDataClass(json['value'] as int);
+
+  Map<String, Object?> toJson() => {'value': value};
+}
 
 void main() {
+  const key = 'key';
+  late _InMemoryKeyValueStore mockKeyValueStore;
   setUp(() {
-    SharedPreferences.setMockInitialValues({
-      "flutter.prefs": true,
-      "flutter.int": 1,
-      "flutter.double": 1.1,
-      "flutter.bool": true,
-      "flutter.String": "first",
-      "flutter.List<String>": ["a", "b"],
-      "flutter.SerializedClass": '{"value":true,"count":42}'
-    });
-  });
-
-  test('Shared Preferences set mock initial values', () async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final value = prefs.getBool("prefs");
-    expect(value, isTrue);
+    mockKeyValueStore = _InMemoryKeyValueStore();
   });
 
   group('HydratedSubject', () {
-    group('correctly handles data type', () {
-      test('int', () async {
-        await testHydrated<int>("int", 1, 2);
+    group('hydration', () {
+      test('Tries to hydrate upon instantiation', () {
+        mockKeyValueStore.getOverride = expectAsync1((_) async {}, count: 1);
+
+        HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
       });
 
-      test('double', () async {
-        await testHydrated<double>("double", 1.1, 2.2);
+      test(
+          'Given persisted value is present, when it hydrates, it emits the value',
+          () {
+        mockKeyValueStore.getOverride = (_) async => 42;
+        final subject =
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+
+        expect(subject, emits(42));
       });
 
-      test('bool', () async {
-        await testHydrated<bool>("bool", true, false);
+      test('Given persisted value is null, when it hydrates, it emits nothing',
+          () {
+        mockKeyValueStore.getOverride = (_) async => null;
+        final subject =
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+
+        expect(subject, neverEmits(anything));
+        subject.close();
       });
 
-      test('String', () async {
-        await testHydrated<String>("String", "first", "second");
+      test(
+          'Given `hydrate` is supplied, but `persist` is ommited, it throws an AssertionError',
+          () {
+        expect(() {
+          HydratedSubject(key,
+              keyValueStore: mockKeyValueStore, hydrate: (_) => 1);
+        }, throwsA(isA<AssertionError>()));
       });
 
-      test('List<String>', () async {
-        testHydrated<List<String>>("List<String>", ["a", "b"], ["c", "d"]);
+      test(
+          'Given `persist` is supplied, but `hydrate` is ommited, it throws an AssertionError',
+          () {
+        expect(() {
+          HydratedSubject(key,
+              keyValueStore: mockKeyValueStore, persist: (_) => '');
+        }, throwsA(isA<AssertionError>()));
       });
 
-      test('SerializedClass', () async {
-        final completer = Completer();
+      test('uses hydrate callback, and emits the output of the callback', () {
+        const testPersistedValue = '24';
+        const testHydratedValue = 42;
+        mockKeyValueStore.getOverride = (_) async => testPersistedValue;
 
-        final subject = HydratedSubject<SerializedClass>(
-          "SerializedClass",
-          hydrate: (s) => SerializedClass.fromJSON(s),
-          persist: (c) => c.toJSON(),
-          onHydrate: () => completer.complete(),
+        final hydrateCallback = expectAsync1((String persistedValue) {
+          expect(persistedValue, equals(testPersistedValue));
+          return testHydratedValue;
+        }, count: 1);
+
+        final subject = HydratedSubject<int>(
+          key,
+          keyValueStore: mockKeyValueStore,
+          hydrate: hydrateCallback,
+          persist: (_) => '',
         );
 
-        final second = SerializedClass(false, 42);
+        expect(subject, emits(testHydratedValue));
+      });
+    });
 
-        /// null before hydrate
-        expect(subject.valueOrNull, isNull);
+    test('exposes the persistence key', () {
+      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
-        /// properly hydrates
-        await completer.future;
-        expect(subject.value.value, isTrue);
-        expect(subject.value.count, equals(42));
+      expect(subject.key, key);
+    });
 
-        /// add values
-        subject.add(second);
-        expect(subject.value.value, isFalse);
-        expect(subject.value.count, equals(42));
+    test('when adding a value, it saves the value with the key-value store',
+        () {
+      const testValue = 42;
+      mockKeyValueStore.putOverride = expectAsync2((key, value) async {
+        expect(value, equals(testValue));
+      }, count: 1);
+      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
-        /// check value in store
-        final prefs = await SharedPreferences.getInstance();
-        expect(prefs.get(subject.key), equals('{"value":false,"count":42}'));
+      subject.add(testValue);
+    });
 
-        /// clean up
-        subject.close();
+    test(
+        'when adding a value, it uses the `persist` callback, and saves the output of this callback',
+        () {
+      const testAddedValue = 42;
+      const testPersistedValue = '24';
+
+      final persistCallback = expectAsync1((int value) {
+        expect(value, equals(testAddedValue));
+        return testPersistedValue;
+      }, count: 1);
+
+      mockKeyValueStore.putOverride = expectAsync2((key, value) async {
+        expect(value, isA<String>());
+        expect(value, equals(testPersistedValue));
+      }, count: 1);
+      final subject = HydratedSubject<int>(
+        key,
+        keyValueStore: mockKeyValueStore,
+        hydrate: (_) => 1,
+        persist: persistCallback,
+      );
+
+      subject.add(testAddedValue);
+    });
+
+    group('persistence error handling', () {
+      test(
+          'given persistence interface `get` throws a StoreError, '
+          'it emits the error through the stream', () {
+        mockKeyValueStore.getOverride =
+            (_) async => throw StoreError('test');
+        final subject =
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+
+        expect(subject, emitsError(isA<StoreError>()));
+      });
+
+      test(
+          'given persistence interface `get` throws an Exception, '
+          'constructing the HydratedSubject throws an asynchronous uncatchable error',
+          () {
+        mockKeyValueStore.getOverride = (_) async => throw Exception('test');
+        runZonedGuarded(
+          () {
+            final completer = Completer();
+            HydratedSubject<int>(
+              key,
+              keyValueStore: mockKeyValueStore,
+              onHydrate: completer.complete,
+            );
+            return completer.future;
+          },
+          expectAsync2((error, _) {
+            expect(error, isA<Exception>());
+          }, count: 1),
+        );
+      });
+
+      test(
+          'given persistence interface put throws a StoreError, '
+          'it emits the error through the stream', () async {
+        const testValue = 42;
+        mockKeyValueStore.putOverride =
+            (_, __) => throw StoreError('test');
+        final subject =
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+
+        final expectation = expectLater(
+            subject,
+            emitsInOrder([
+              42,
+              emitsError(isA<StoreError>()),
+            ]));
+        subject.add(testValue);
+
+        await expectation;
       });
     });
   });
-
-  test('HydratedSubject emits latest value into the new listener', () async {
-    final subject = HydratedSubject<SerializedClass>(
-      "SerializedClass",
-      hydrate: (s) => SerializedClass.fromJSON(s),
-      persist: (c) => c.toJSON(),
-    );
-
-    await subject.first;
-
-    final expectation = expectLater(
-        subject.stream,
-        emitsInOrder([
-          isA<SerializedClass>().having((c) => c.value, 'value', isTrue),
-          isA<SerializedClass>().having((c) => c.value, 'value', isFalse),
-        ]));
-
-    final second = SerializedClass(false, 42);
-    subject.add(second);
-
-    await expectation;
-    subject.close();
-  });
-}
-
-/// An example of a class that serializes to and from a string
-class SerializedClass {
-  final bool value;
-  final int count;
-
-  SerializedClass(this.value, this.count);
-
-  factory SerializedClass.fromJSON(String s) {
-    final map = jsonDecode(s);
-
-    return SerializedClass(
-      map['value'],
-      map['count'],
-    );
-  }
-
-  String toJSON() => jsonEncode({
-        'value': this.value,
-        'count': this.count,
-      });
-}
-
-/// The test procedure for a HydratedSubject
-Future<void> testHydrated<T>(
-  String key,
-  T first,
-  T second,
-) async {
-  final completer = Completer();
-
-  final subject = HydratedSubject<T>(
-    key,
-    onHydrate: () => completer.complete(),
-  );
-
-  /// null before hydrate
-  expect(subject.valueOrNull, isNull);
-  expect(subject.hasValue, isFalse);
-
-  /// properly hydrates
-  await completer.future;
-  expect(subject.value, equals(first));
-  expect(subject.hasValue, isTrue);
-
-  /// add values
-  subject.add(second);
-  expect(subject.value, equals(second));
-  expect(subject.hasValue, isTrue);
-
-  /// check value in store
-  final prefs = await SharedPreferences.getInstance();
-  expect(prefs.get(subject.key), equals(second));
-
-  /// clean up
-  subject.close();
 }
