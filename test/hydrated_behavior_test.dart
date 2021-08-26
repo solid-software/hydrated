@@ -497,8 +497,8 @@ void main() {
     });
 
     test('can be listened to multiple times', () async {
-      final subject =
-          HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+      final subject = HydratedSubject('key',
+          seedValue: 1, keyValueStore: mockKeyValueStore);
       final stream = subject.stream;
 
       await expectLater(stream, emits(1));
@@ -530,8 +530,8 @@ void main() {
     });
 
     test('setter `value=` has same behavior as adding to Subject', () async {
-      final subject =
-          HydratedSubject<int?>('key', seedValue: 0, keyValueStore: mockKeyValueStore);
+      final subject = HydratedSubject<int?>('key',
+          seedValue: 0, keyValueStore: mockKeyValueStore);
 
       subject.value = 1;
 
@@ -726,7 +726,8 @@ void main() {
     group('override built-in', () {
       test('where', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.where((event) => event.isOdd);
           expect(stream, emitsInOrder(<int?>[1, 3]));
@@ -750,7 +751,8 @@ void main() {
 
       test('map', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var mapped = hydratedSubject.map((event) => event + 1);
           expect(mapped, emitsInOrder(<int?>[2, 3]));
@@ -772,7 +774,8 @@ void main() {
 
       test('asyncMap', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var mapped =
               hydratedSubject.asyncMap((event) => Future.value(event + 1));
@@ -796,7 +799,8 @@ void main() {
 
       test('asyncExpand', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream =
               hydratedSubject.asyncExpand((event) => Stream.value(event + 1));
@@ -820,7 +824,8 @@ void main() {
 
       test('handleError', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.handleError(
             expectAsync1<void, dynamic>(
@@ -862,7 +867,8 @@ void main() {
 
       test('expand', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.expand((event) => [event + 1]);
           expect(stream, emitsInOrder(<int?>[2, 3]));
@@ -884,7 +890,8 @@ void main() {
 
       test('transform', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.transform(
               IntervalStreamTransformer(const Duration(milliseconds: 100)));
@@ -931,7 +938,8 @@ void main() {
 
       test('take', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.take(2);
           expect(stream, emitsInOrder(<int?>[1, 2]));
@@ -955,7 +963,8 @@ void main() {
 
       test('takeWhile', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.takeWhile((element) => element <= 2);
           expect(stream, emitsInOrder(<int?>[1, 2]));
@@ -979,7 +988,8 @@ void main() {
 
       test('skip', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.skip(2);
           expect(stream, emitsInOrder(<int?>[3, 4]));
@@ -1005,7 +1015,8 @@ void main() {
 
       test('skipWhile', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.skipWhile((element) => element < 3);
           expect(stream, emitsInOrder(<int?>[3, 4]));
@@ -1031,7 +1042,8 @@ void main() {
 
       test('distinct', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject.distinct();
           expect(stream, emitsInOrder(<int?>[1, 2]));
@@ -1057,7 +1069,8 @@ void main() {
 
       test('timeout', () {
         {
-          var hydratedSubject = HydratedSubject('key', seedValue: 1, keyValueStore: mockKeyValueStore);
+          var hydratedSubject = HydratedSubject('key',
+              seedValue: 1, keyValueStore: mockKeyValueStore);
 
           var stream = hydratedSubject
               .interval(const Duration(milliseconds: 100))

@@ -114,7 +114,8 @@ void main() {
     });
 
     test('exposes the persistence key', () {
-      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+      final subject =
+          HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
       expect(subject.key, key);
     });
@@ -125,7 +126,8 @@ void main() {
       mockKeyValueStore.putOverride = expectAsync2((key, value) async {
         expect(value, equals(testValue));
       }, count: 1);
-      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
+      final subject =
+          HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
       subject.add(testValue);
     });
@@ -159,8 +161,7 @@ void main() {
       test(
           'given persistence interface `get` throws a StoreError, '
           'it emits the error through the stream', () {
-        mockKeyValueStore.getOverride =
-            (_) async => throw StoreError('test');
+        mockKeyValueStore.getOverride = (_) async => throw StoreError('test');
         final subject =
             HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
@@ -192,8 +193,7 @@ void main() {
           'given persistence interface put throws a StoreError, '
           'it emits the error through the stream', () async {
         const testValue = 42;
-        mockKeyValueStore.putOverride =
-            (_, __) => throw StoreError('test');
+        mockKeyValueStore.putOverride = (_, __) => throw StoreError('test');
         final subject =
             HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
