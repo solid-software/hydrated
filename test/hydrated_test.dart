@@ -189,7 +189,7 @@ void main() {
       });
 
       test(
-          'AAAA given persistence interface put throws a PersistenceError, '
+          'given persistence interface put throws a PersistenceError, '
           'it emits the error through the stream', () async {
         const testValue = 42;
         mockKeyValueStore.putOverride =

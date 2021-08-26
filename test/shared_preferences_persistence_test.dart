@@ -86,31 +86,6 @@ void main() {
   });
 }
 
-/// An example of a class that serializes to and from a string
-class SerializedClass extends Equatable {
-  final bool value;
-  final int count;
-
-  SerializedClass(this.value, this.count);
-
-  factory SerializedClass.fromJSON(String s) {
-    final map = jsonDecode(s);
-
-    return SerializedClass(
-      map['value'],
-      map['count'],
-    );
-  }
-
-  String toJSON() => jsonEncode({
-        'value': this.value,
-        'count': this.count,
-      });
-
-  @override
-  List<Object?> get props => [value, count];
-}
-
 void _setMockPersistedValue(String key, dynamic value) {
   SharedPreferences.setMockInitialValues({
     "flutter.$key": value,
