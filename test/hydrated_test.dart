@@ -51,7 +51,7 @@ void main() {
       test('Tries to hydrate upon instantiation', () {
         mockKeyValueStore.getOverride = expectAsync1((_) async {}, count: 1);
 
-        HydratedSubject<int>(key, persistence: mockKeyValueStore);
+        HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
       });
 
       test(
@@ -59,7 +59,7 @@ void main() {
           () {
         mockKeyValueStore.getOverride = (_) async => 42;
         final subject =
-            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
         expect(subject, emits(42));
       });
@@ -68,7 +68,7 @@ void main() {
           () {
         mockKeyValueStore.getOverride = (_) async => null;
         final subject =
-            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
         expect(subject, neverEmits(anything));
         subject.close();
@@ -79,7 +79,7 @@ void main() {
           () {
         expect(() {
           HydratedSubject(key,
-              persistence: mockKeyValueStore, hydrate: (_) => 1);
+              keyValueStore: mockKeyValueStore, hydrate: (_) => 1);
         }, throwsA(isA<AssertionError>()));
       });
 
@@ -88,7 +88,7 @@ void main() {
           () {
         expect(() {
           HydratedSubject(key,
-              persistence: mockKeyValueStore, persist: (_) => '');
+              keyValueStore: mockKeyValueStore, persist: (_) => '');
         }, throwsA(isA<AssertionError>()));
       });
 
@@ -104,7 +104,7 @@ void main() {
 
         final subject = HydratedSubject<int>(
           key,
-          persistence: mockKeyValueStore,
+          keyValueStore: mockKeyValueStore,
           hydrate: hydrateCallback,
           persist: (_) => '',
         );
@@ -114,7 +114,7 @@ void main() {
     });
 
     test('exposes the persistence key', () {
-      final subject = HydratedSubject<int>(key, persistence: mockKeyValueStore);
+      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
       expect(subject.key, key);
     });
@@ -125,7 +125,7 @@ void main() {
       mockKeyValueStore.putOverride = expectAsync2((key, value) async {
         expect(value, equals(testValue));
       }, count: 1);
-      final subject = HydratedSubject<int>(key, persistence: mockKeyValueStore);
+      final subject = HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
       subject.add(testValue);
     });
@@ -147,7 +147,7 @@ void main() {
       }, count: 1);
       final subject = HydratedSubject<int>(
         key,
-        persistence: mockKeyValueStore,
+        keyValueStore: mockKeyValueStore,
         hydrate: (_) => 1,
         persist: persistCallback,
       );
@@ -160,11 +160,11 @@ void main() {
           'given persistence interface `get` throws a PersistenceError, '
           'it emits the error through the stream', () {
         mockKeyValueStore.getOverride =
-            (_) async => throw PersistenceError('test');
+            (_) async => throw StoreError('test');
         final subject =
-            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
-        expect(subject, emitsError(isA<PersistenceError>()));
+        expect(subject, emitsError(isA<StoreError>()));
       });
 
       test(
@@ -177,7 +177,7 @@ void main() {
             final completer = Completer();
             HydratedSubject<int>(
               key,
-              persistence: mockKeyValueStore,
+              keyValueStore: mockKeyValueStore,
               onHydrate: completer.complete,
             );
             return completer.future;
@@ -193,15 +193,15 @@ void main() {
           'it emits the error through the stream', () async {
         const testValue = 42;
         mockKeyValueStore.putOverride =
-            (_, __) => throw PersistenceError('test');
+            (_, __) => throw StoreError('test');
         final subject =
-            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+            HydratedSubject<int>(key, keyValueStore: mockKeyValueStore);
 
         final expectation = expectLater(
             subject,
             emitsInOrder([
               42,
-              emitsError(isA<PersistenceError>()),
+              emitsError(isA<StoreError>()),
             ]));
         subject.add(testValue);
 

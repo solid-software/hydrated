@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'persistence/key_value_store.dart';
-import 'persistence/persistence_error.dart';
-import 'persistence/shared_preferences_store.dart';
+import 'key_value_store/key_value_store.dart';
+import 'key_value_store/store_error.dart';
+import 'key_value_store/shared_preferences_store.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
@@ -81,7 +81,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     VoidCallback? onListen,
     VoidCallback? onCancel,
     bool sync = false,
-    KeyValueStore persistence = const SharedPreferencesStore(),
+    KeyValueStore keyValueStore = const SharedPreferencesStore(),
   }) {
     assert(
         (hydrate == null && persist == null) ||
@@ -108,7 +108,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       persist,
       onHydrate,
       subject,
-      persistence,
+      keyValueStore,
     );
   }
 
@@ -168,7 +168,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       }
 
       _onHydrate?.call();
-    } on PersistenceError catch (e, s) {
+    } on StoreError catch (e, s) {
       addError(e, s);
     }
   }
@@ -184,7 +184,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
         persistedVal = val;
         await _persistence.put<T>(_key, persistedVal);
       }
-    } on PersistenceError catch (e, s) {
+    } on StoreError catch (e, s) {
       addError(e, s);
     }
   }

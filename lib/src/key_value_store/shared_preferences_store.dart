@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/type_utils.dart';
 import 'key_value_store.dart';
-import 'persistence_error.dart';
+import 'store_error.dart';
 
 /// An adapter for [SharedPreferences] persistence.
 ///
@@ -37,7 +37,7 @@ class SharedPreferencesStore implements KeyValueStore {
           _areTypesEqual<T, List<String>?>())
         val = prefs.getStringList(key) as T?;
     } catch (e) {
-      throw PersistenceError(
+      throw StoreError(
         'Error retrieving value from SharedPreferences: $e',
       );
     }

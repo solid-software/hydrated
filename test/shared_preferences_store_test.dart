@@ -55,7 +55,7 @@ void main() {
         _setMockPersistedValue('key', unsupportedTypeValue);
         expect(
           () => SharedPreferencesStore().get<int>('key'),
-          throwsA(isA<PersistenceError>()),
+          throwsA(isA<StoreError>()),
         );
       });
     });
