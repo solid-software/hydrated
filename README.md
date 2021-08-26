@@ -61,6 +61,24 @@ final user$ = HydratedSubject<User>(
 
 Hydrated is mock tested with all supported types and is dogfooded by its creator.
 
+## Extensible
+
+Hydrated supports any key-value data storages -- just implement the `KeyValueStore` interface
+and you will be able to use *hive*, *flutter_secure_storage* or any other persistence solution of your choice.
+
+```dart
+class MyAwesomeKeyValueStore implements KeyValueStore {
+  /// your implementation here...
+}
+
+final user = HydratedSubject<User>(
+  "user",
+  hydrate: (String s) => User.fromJSON(s),
+  persist: (User user) => user.toJSON(),
+  keyValueStore: MyAwesomeKeyValueStore()
+);
+```
+
 ## Demo
 
 <img alt="demo of Hydrated BehaviorSubject between app restarts" src="https://raw.githubusercontent.com/lukepighetti/hydrated/master/doc/hydrated.gif" width="400">
