@@ -151,10 +151,11 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   Future<void> _hydrateSubject() async {
     try {
       T? val;
-      if (_hydrate != null) {
+      final hydrate = _hydrate;
+      if (hydrate != null) {
         final persistedValue = await _persistence.get<String>(_key);
         if (persistedValue != null) {
-          val = _hydrate!(persistedValue);
+          val = hydrate(persistedValue);
         }
       } else {
         val = await _persistence.get<T?>(_key);
@@ -174,9 +175,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
 
   void _persistValue(T val) async {
     try {
+      final persist = _persist;
       var persistedVal;
-      if (_persist != null) {
-        persistedVal = _persist!(val);
+      if (persist != null) {
+        persistedVal = persist(val);
         _persistence.put<String>(_key, persistedVal);
       } else {
         persistedVal = val;
