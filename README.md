@@ -73,7 +73,7 @@ class MyAwesomeKeyValueStore implements KeyValueStore {
 
 final user = HydratedSubject<User>(
   "user",
-  hydrate: (String s) => User.fromJSON(s),
+  hydrate: (String s) => User.fromJson(s),
   persist: (User user) => user.toJSON(),
   keyValueStore: MyAwesomeKeyValueStore()
 );
