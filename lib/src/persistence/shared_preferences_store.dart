@@ -12,10 +12,10 @@ import 'persistence_error.dart';
 /// - `bool`
 /// - `String`
 /// - `List<String>`.
-class SharedPreferencesPersistence implements KeyValueStore {
+class SharedPreferencesStore implements KeyValueStore {
   static final _areTypesEqual = TypeUtils.areTypesEqual;
 
-  const SharedPreferencesPersistence();
+  const SharedPreferencesStore();
 
   @override
   Future<T?> get<T>(String key) async {

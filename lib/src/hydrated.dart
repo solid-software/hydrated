@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'persistence/key_value_store.dart';
 import 'persistence/persistence_error.dart';
-import 'persistence/shared_preferences_persistence.dart';
+import 'persistence/shared_preferences_store.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
@@ -18,7 +18,7 @@ typedef HydrateCallback<T> = T Function(String);
 /// Mimics the behavior of a [BehaviorSubject].
 ///
 /// The set of supported classes depends on the [KeyValueStore] implementation.
-/// For a list of types supported by default see [SharedPreferencesPersistence].
+/// For a list of types supported by default see [SharedPreferencesStore].
 ///
 /// Example:
 ///
@@ -81,7 +81,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     VoidCallback? onListen,
     VoidCallback? onCancel,
     bool sync = false,
-    KeyValueStore persistence = const SharedPreferencesPersistence(),
+    KeyValueStore persistence = const SharedPreferencesStore(),
   }) {
     assert(
         (hydrate == null && persist == null) ||

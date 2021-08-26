@@ -18,14 +18,14 @@ void main() {
     expect(value, isTrue);
   });
 
-  group('SharedPreferencesPersistence', () {
+  group('SharedPreferencesStore', () {
     group('handles unsupported types', () {
       test(
           'when saving a value with an unsupported type, it throws an AssertionError',
           () {
         final unsupportedTypeValue = Exception('test unsupported value');
         expect(
-          () => SharedPreferencesPersistence().put('key', unsupportedTypeValue),
+          () => SharedPreferencesStore().put('key', unsupportedTypeValue),
           throwsA(isA<AssertionError>()),
         );
       });
@@ -34,7 +34,7 @@ void main() {
           'when getting a value with an unspecified type (dynamic), it throws an AssertionError',
           () {
         expect(
-          () => SharedPreferencesPersistence().get('key'),
+          () => SharedPreferencesStore().get('key'),
           throwsA(isA<AssertionError>()),
         );
       });
@@ -43,7 +43,7 @@ void main() {
           'when getting a value with an unsupported type, it throws an AssertionError',
           () {
         expect(
-          () => SharedPreferencesPersistence().get<Exception>('key'),
+          () => SharedPreferencesStore().get<Exception>('key'),
           throwsA(isA<AssertionError>()),
         );
       });
@@ -54,7 +54,7 @@ void main() {
         final unsupportedTypeValue = Exception('test unsupported value');
         _setMockPersistedValue('key', unsupportedTypeValue);
         expect(
-          () => SharedPreferencesPersistence().get<int>('key'),
+          () => SharedPreferencesStore().get<int>('key'),
           throwsA(isA<PersistenceError>()),
         );
       });
@@ -96,7 +96,7 @@ Future<void> _testPersistence<T>(
   T first,
   T second,
 ) async {
-  final persistence = SharedPreferencesPersistence();
+  final persistence = SharedPreferencesStore();
 
   /// null before setting anything
   expect(await persistence.get<T>(key), isNull);
