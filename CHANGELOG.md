@@ -1,3 +1,8 @@
+## 2.1.0
+
+- Add support for a generic `KeyValueStore` interface.
+- Add an extensive unit-test suite.
+
 ## 2.0.1
 
 - Restore `BehaviorSubject` behavior of `HydratedSubject`.
