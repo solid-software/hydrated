@@ -52,14 +52,32 @@ We also support serialized classes with `hydrate` and `persist` arguments.
 ```dart
 final user$ = HydratedSubject<User>(
   "user",
-  hydrate: (String s) => User.fromJSON(s),
-  persist: (User user) => user.toJSON(),
+  hydrate: (String s) => User.fromJson(s),
+  persist: (User user) => user.toJson(),
 );
 ```
 
 ## Reliable
 
 Hydrated is mock tested with all supported types and is dogfooded by its creator.
+
+## Extensible
+
+Hydrated supports any key-value data storages -- just implement the `KeyValueStore` interface
+and you will be able to use *hive*, *flutter_secure_storage* or any other persistence solution of your choice.
+
+```dart
+class MyAwesomeKeyValueStore implements KeyValueStore {
+  /// your implementation here...
+}
+
+final user = HydratedSubject<User>(
+  "user",
+  hydrate: (String s) => User.fromJson(s),
+  persist: (User user) => user.toJson(),
+  keyValueStore: MyAwesomeKeyValueStore()
+);
+```
 
 ## Demo
 
