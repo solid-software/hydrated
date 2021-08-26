@@ -24,21 +24,23 @@ class SharedPreferencesPersistence implements KeyValueStore {
 
     T? val;
 
-    if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>())
-      val = prefs.getInt(key) as T?;
-    else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>())
-      val = prefs.getDouble(key) as T?;
-    else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>())
-      val = prefs.getBool(key) as T?;
-    else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>())
-      val = prefs.getString(key) as T?;
-    else if (_areTypesEqual<T, List<String>>() ||
-        _areTypesEqual<T, List<String>?>())
-      val = prefs.getStringList(key) as T?;
-    else
+    try {
+      if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>())
+        val = prefs.getInt(key) as T?;
+      else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>())
+        val = prefs.getDouble(key) as T?;
+      else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>())
+        val = prefs.getBool(key) as T?;
+      else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>())
+        val = prefs.getString(key) as T?;
+      else if (_areTypesEqual<T, List<String>>() ||
+          _areTypesEqual<T, List<String>?>())
+        val = prefs.getStringList(key) as T?;
+    } catch (e) {
       throw PersistenceError(
-        'Shared Preferences returned an invalid type',
+        'Error retrieving value from SharedPreferences: $e',
       );
+    }
 
     return val;
   }
@@ -58,14 +60,7 @@ class SharedPreferencesPersistence implements KeyValueStore {
       await prefs.setBool(key, value);
     else if (value is String)
       await prefs.setString(key, value);
-    else if (value is List<String>)
-      await prefs.setStringList(key, value);
-    else {
-      throw PersistenceError(
-        'HydratedSubject – value must be int, '
-        'double, bool, String, or List<String>',
-      );
-    }
+    else if (value is List<String>) await prefs.setStringList(key, value);
   }
 
   void _assertSupportedType<T>() {

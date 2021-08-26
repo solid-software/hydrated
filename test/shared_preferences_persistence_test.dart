@@ -20,7 +20,48 @@ void main() {
     expect(value, isTrue);
   });
 
-  group('HydratedSubject', () {
+  group('SharedPreferencesPersistence', () {
+    group('handles unsupported types', () {
+      test(
+          'when saving a value with an unsupported type, it throws an AssertionError',
+          () {
+        final unsupportedTypeValue = Exception('test unsupported value');
+        expect(
+          () => SharedPreferencesPersistence().put('key', unsupportedTypeValue),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test(
+          'when getting a value with an unspecified type (dynamic), it throws an AssertionError',
+          () {
+        expect(
+          () => SharedPreferencesPersistence().get('key'),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test(
+          'when getting a value with an unsupported type, it throws an AssertionError',
+          () {
+        expect(
+          () => SharedPreferencesPersistence().get<Exception>('key'),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test(
+          'when SharedPreferences return an unsupported type, it throws a PersistenceError',
+          () {
+        final unsupportedTypeValue = Exception('test unsupported value');
+        _setMockPersistedValue('key', unsupportedTypeValue);
+        expect(
+          () => SharedPreferencesPersistence().get<int>('key'),
+          throwsA(isA<PersistenceError>()),
+        );
+      });
+    });
+
     group('correctly handles data type', () {
       test('int', () async {
         await _testPersistence<int?>("int", 1, 2);
