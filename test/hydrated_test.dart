@@ -1,4 +1,6 @@
 // ignore_for_file: close_sinks
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 
@@ -111,6 +113,12 @@ void main() {
       });
     });
 
+    test('exposes the persistence key', () {
+      final subject = HydratedSubject<int>(key, persistence: mockKeyValueStore);
+
+      expect(subject.key, key);
+    });
+
     test('when adding a value, it saves the value with the key-value store',
         () {
       const testValue = 42;
@@ -145,6 +153,60 @@ void main() {
       );
 
       subject.add(testAddedValue);
+    });
+
+    group('persistence error handling', () {
+      test(
+          'given persistence interface `get` throws a PersistenceError, '
+          'it emits the error through the stream', () {
+        mockKeyValueStore.getOverride =
+            (_) async => throw PersistenceError('test');
+        final subject =
+            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+
+        expect(subject, emitsError(isA<PersistenceError>()));
+      });
+
+      test(
+          'given persistence interface `get` throws an Exception, '
+          'constructing the HydratedSubject throws an asynchronous uncatchable error',
+          () {
+        mockKeyValueStore.getOverride = (_) async => throw Exception('test');
+        runZonedGuarded(
+          () {
+            final completer = Completer();
+            HydratedSubject<int>(
+              key,
+              persistence: mockKeyValueStore,
+              onHydrate: completer.complete,
+            );
+            return completer.future;
+          },
+          expectAsync2((error, _) {
+            expect(error, isA<Exception>());
+          }, count: 1),
+        );
+      });
+
+      test(
+          'AAAA given persistence interface put throws a PersistenceError, '
+          'it emits the error through the stream', () async {
+        const testValue = 42;
+        mockKeyValueStore.putOverride =
+            (_, __) => throw PersistenceError('test');
+        final subject =
+            HydratedSubject<int>(key, persistence: mockKeyValueStore);
+
+        final expectation = expectLater(
+            subject,
+            emitsInOrder([
+              42,
+              emitsError(isA<PersistenceError>()),
+            ]));
+        subject.add(testValue);
+
+        await expectation;
+      });
     });
   });
 }

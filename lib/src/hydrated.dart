@@ -179,10 +179,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       var persistedVal;
       if (persist != null) {
         persistedVal = persist(val);
-        _persistence.put<String>(_key, persistedVal);
+        await _persistence.put<String>(_key, persistedVal);
       } else {
         persistedVal = val;
-        _persistence.put<T>(_key, persistedVal);
+        await _persistence.put<T>(_key, persistedVal);
       }
     } on PersistenceError catch (e, s) {
       addError(e, s);
