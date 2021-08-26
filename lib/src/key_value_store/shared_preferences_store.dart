@@ -19,7 +19,7 @@ class SharedPreferencesStore implements KeyValueStore {
 
   @override
   Future<T?> get<T>(String key) async {
-    _assertSupportedType<T>();
+    _ensureSupportedType<T>();
     final prefs = await _getPrefs();
 
     T? val;
@@ -47,7 +47,7 @@ class SharedPreferencesStore implements KeyValueStore {
 
   @override
   Future<void> put<T>(String key, T? value) async {
-    _assertSupportedType<T>();
+    _ensureSupportedType<T>();
     final prefs = await _getPrefs();
 
     if (value == null)
@@ -63,19 +63,22 @@ class SharedPreferencesStore implements KeyValueStore {
     else if (value is List<String>) await prefs.setStringList(key, value);
   }
 
-  void _assertSupportedType<T>() {
-    assert(
-        _areTypesEqual<T, int>() ||
-            _areTypesEqual<T, int?>() ||
-            _areTypesEqual<T, double>() ||
-            _areTypesEqual<T, double?>() ||
-            _areTypesEqual<T, bool>() ||
-            _areTypesEqual<T, bool?>() ||
-            _areTypesEqual<T, String>() ||
-            _areTypesEqual<T, String?>() ||
-            _areTypesEqual<T, List<String>>() ||
-            _areTypesEqual<T, List<String>?>(),
-        '$T type is not supported by SharedPreferences.');
+  void _ensureSupportedType<T>() {
+    if (_areTypesEqual<T, int>() ||
+        _areTypesEqual<T, int?>() ||
+        _areTypesEqual<T, double>() ||
+        _areTypesEqual<T, double?>() ||
+        _areTypesEqual<T, bool>() ||
+        _areTypesEqual<T, bool?>() ||
+        _areTypesEqual<T, String>() ||
+        _areTypesEqual<T, String?>() ||
+        _areTypesEqual<T, List<String>>() ||
+        _areTypesEqual<T, List<String>?>()) {
+      return;
+    } else {
+      throw StoreError.unsupportedType(
+          '$T type is not supported by SharedPreferences.');
+    }
   }
 
   Future<SharedPreferences> _getPrefs() => SharedPreferences.getInstance();

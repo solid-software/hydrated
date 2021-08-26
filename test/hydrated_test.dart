@@ -157,7 +157,7 @@ void main() {
 
     group('persistence error handling', () {
       test(
-          'given persistence interface `get` throws a PersistenceError, '
+          'given persistence interface `get` throws a StoreError, '
           'it emits the error through the stream', () {
         mockKeyValueStore.getOverride =
             (_) async => throw StoreError('test');
@@ -189,7 +189,7 @@ void main() {
       });
 
       test(
-          'given persistence interface put throws a PersistenceError, '
+          'given persistence interface put throws a StoreError, '
           'it emits the error through the stream', () async {
         const testValue = 42;
         mockKeyValueStore.putOverride =

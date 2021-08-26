@@ -21,35 +21,35 @@ void main() {
   group('SharedPreferencesStore', () {
     group('handles unsupported types', () {
       test(
-          'when saving a value with an unsupported type, it throws an AssertionError',
+          'when saving a value with an unsupported type, it throws a StoreError',
           () {
         final unsupportedTypeValue = Exception('test unsupported value');
         expect(
           () => SharedPreferencesStore().put('key', unsupportedTypeValue),
-          throwsA(isA<AssertionError>()),
+          throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when getting a value with an unspecified type (dynamic), it throws an AssertionError',
+          'when getting a value with an unspecified type (dynamic), it throws an StoreError',
           () {
         expect(
           () => SharedPreferencesStore().get('key'),
-          throwsA(isA<AssertionError>()),
+          throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when getting a value with an unsupported type, it throws an AssertionError',
+          'when getting a value with an unsupported type, it throws an StoreError',
           () {
         expect(
           () => SharedPreferencesStore().get<Exception>('key'),
-          throwsA(isA<AssertionError>()),
+          throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when SharedPreferences return an unsupported type, it throws a PersistenceError',
+          'when SharedPreferences return an unsupported type, it throws a StoreError',
           () {
         final unsupportedTypeValue = Exception('test unsupported value');
         _setMockPersistedValue('key', unsupportedTypeValue);
