@@ -17,20 +17,21 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final String _title;
-  final _count = HydratedSubject<int>("count", seedValue: 0);
-
   MyHomePage({
     Key? key,
     required String title,
   })  : _title = title,
         super(key: key);
 
+  final String _title;
+
+  final _count = HydratedSubject<int>("count", seedValue: 0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this._title),
+        title: Text(_title),
       ),
       body: Center(
         child: StreamBuilder<int>(
@@ -39,7 +40,7 @@ class MyHomePage extends StatelessWidget {
           builder: (context, snap) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('You have pushed the button this many times:'),
+              const Text('You have pushed the button this many times:'),
               Text(
                 '${snap.data}',
                 style: Theme.of(context).textTheme.headline4,
@@ -51,7 +52,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

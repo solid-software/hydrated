@@ -1,5 +1,4 @@
-import 'dart:async';
-
+// ignore_for_file: close_sinks, long-method, no-magic-number
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +9,7 @@ void main() {
   });
 
   test('Shared Preferences set mock initial values', () async {
-    final key = 'prefs';
+    const key = 'prefs';
     _setMockPersistedValue(key, true);
 
     final prefs = await SharedPreferences.getInstance();
@@ -21,40 +20,41 @@ void main() {
   group('SharedPreferencesStore', () {
     group('handles unsupported types', () {
       test(
-          'when saving a value with an unsupported type, it throws a StoreError',
-          () {
+          'when saving a value with an unsupported type, '
+          'it throws a StoreError', () {
         final unsupportedTypeValue = Exception('test unsupported value');
         expect(
-          () => SharedPreferencesStore().put('key', unsupportedTypeValue),
+          () => const SharedPreferencesStore().put('key', unsupportedTypeValue),
           throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when getting a value with an unspecified type (dynamic), it throws an StoreError',
-          () {
+          'when getting a value with an unspecified type (dynamic), '
+          'it throws an StoreError', () {
         expect(
-          () => SharedPreferencesStore().get('key'),
+          // ignore: implicit_dynamic_method
+          () => const SharedPreferencesStore().get('key'),
           throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when getting a value with an unsupported type, it throws an StoreError',
-          () {
+          'when getting a value with an unsupported type, '
+          'it throws an StoreError', () {
         expect(
-          () => SharedPreferencesStore().get<Exception>('key'),
+          () => const SharedPreferencesStore().get<Exception>('key'),
           throwsA(isA<StoreError>()),
         );
       });
 
       test(
-          'when SharedPreferences return an unsupported type, it throws a StoreError',
-          () {
+          'when SharedPreferences return an unsupported type, '
+          'it throws a StoreError', () {
         final unsupportedTypeValue = Exception('test unsupported value');
         _setMockPersistedValue('key', unsupportedTypeValue);
         expect(
-          () => SharedPreferencesStore().get<int>('key'),
+          () => const SharedPreferencesStore().get<int>('key'),
           throwsA(isA<StoreError>()),
         );
       });
@@ -78,15 +78,19 @@ void main() {
       });
 
       test('List<String>', () async {
-        _testPersistence<List<String>?>("List<String>", ["a", "b"], ["c", "d"]);
+        await _testPersistence<List<String>?>(
+          "List<String>",
+          ["a", "b"],
+          ["c", "d"],
+        );
       });
     });
   });
 }
 
-void _setMockPersistedValue(String key, dynamic value) {
+void _setMockPersistedValue(String key, Object? value) {
   SharedPreferences.setMockInitialValues({
-    "flutter.$key": value,
+    if (value != null) "flutter.$key": value,
   });
 }
 
@@ -96,7 +100,7 @@ Future<void> _testPersistence<T>(
   T first,
   T second,
 ) async {
-  final persistence = SharedPreferencesStore();
+  const persistence = SharedPreferencesStore();
 
   /// null before setting anything
   expect(await persistence.get<T>(key), isNull);

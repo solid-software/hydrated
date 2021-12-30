@@ -1,0 +1,5 @@
+include: package:solid_lints/analysis_options.yaml
+
+analyzer:
+  errors:
+    public_member_api_docs: ignore

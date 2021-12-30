@@ -1,8 +1,7 @@
+import 'package:hydrated/src/key_value_store/key_value_store.dart';
+import 'package:hydrated/src/key_value_store/store_error.dart';
+import 'package:hydrated/src/utils/type_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../utils/type_utils.dart';
-import 'key_value_store.dart';
-import 'store_error.dart';
 
 /// An adapter for [SharedPreferences] persistence.
 ///
@@ -13,9 +12,10 @@ import 'store_error.dart';
 /// - `String`
 /// - `List<String>`.
 class SharedPreferencesStore implements KeyValueStore {
-  static final _areTypesEqual = TypeUtils.areTypesEqual;
-
+  /// Create an instance of [SharedPreferences] storage wrapper.
   const SharedPreferencesStore();
+
+  static const _areTypesEqual = TypeUtils.areTypesEqual;
 
   @override
   Future<T?> get<T>(String key) async {
@@ -25,17 +25,18 @@ class SharedPreferencesStore implements KeyValueStore {
     T? val;
 
     try {
-      if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>())
+      if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>()) {
         val = prefs.getInt(key) as T?;
-      else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>())
+      } else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>()) {
         val = prefs.getDouble(key) as T?;
-      else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>())
+      } else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>()) {
         val = prefs.getBool(key) as T?;
-      else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>())
+      } else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>()) {
         val = prefs.getString(key) as T?;
-      else if (_areTypesEqual<T, List<String>>() ||
-          _areTypesEqual<T, List<String>?>())
+      } else if (_areTypesEqual<T, List<String>>() ||
+          _areTypesEqual<T, List<String>?>()) {
         val = prefs.getStringList(key) as T?;
+      }
     } catch (e) {
       throw StoreError(
         'Error retrieving value from SharedPreferences: $e',
@@ -50,17 +51,19 @@ class SharedPreferencesStore implements KeyValueStore {
     _ensureSupportedType<T>();
     final prefs = await _getPrefs();
 
-    if (value == null)
-      prefs.remove(key);
-    else if (value is int)
+    if (value == null) {
+      await prefs.remove(key);
+    } else if (value is int) {
       await prefs.setInt(key, value);
-    else if (value is double)
+    } else if (value is double) {
       await prefs.setDouble(key, value);
-    else if (value is bool)
+    } else if (value is bool) {
       await prefs.setBool(key, value);
-    else if (value is String)
+    } else if (value is String) {
       await prefs.setString(key, value);
-    else if (value is List<String>) await prefs.setStringList(key, value);
+    } else if (value is List<String>) {
+      await prefs.setStringList(key, value);
+    }
   }
 
   void _ensureSupportedType<T>() {
@@ -77,7 +80,8 @@ class SharedPreferencesStore implements KeyValueStore {
       return;
     } else {
       throw StoreError.unsupportedType(
-          '$T type is not supported by SharedPreferences.');
+        '$T type is not supported by SharedPreferences.',
+      );
     }
   }
 

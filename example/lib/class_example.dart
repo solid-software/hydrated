@@ -17,28 +17,26 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final String _title;
-
-  final _countSubject = HydratedSubject<SerializedClass>(
-    "serialized-count",
-    hydrate: (value) => SerializedClass.fromJSON(value),
-    persist: (value) => value.toJSON,
-    seedValue: SerializedClass(0),
-  );
-
   MyHomePage({
     Key? key,
     required String title,
   })  : _title = title,
         super(key: key);
 
+  final String _title;
+
+  final _countSubject = HydratedSubject<SerializedClass>(
+    "serialized-count",
+    hydrate: (value) => SerializedClass.fromJSON(value),
+    persist: (value) => value.toJSON,
+    seedValue: const SerializedClass(0),
+  );
+
   @override
   Widget build(BuildContext context) {
-    print('Serialized Hydrated Demo');
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(this._title),
+        title: Text(_title),
       ),
       body: Center(
         child: StreamBuilder<SerializedClass>(
@@ -47,7 +45,7 @@ class MyHomePage extends StatelessWidget {
           builder: (context, snapshot) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('You have pushed the button this many times:'),
+              const Text('You have pushed the button this many times:'),
               Text(
                 '${snapshot.data?.count}',
                 style: Theme.of(context).textTheme.headline4,
@@ -59,7 +57,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -71,11 +69,11 @@ class MyHomePage extends StatelessWidget {
 }
 
 class SerializedClass {
-  final int count;
-
   const SerializedClass(this.count);
 
-  SerializedClass.fromJSON(String json) : this.count = int.parse(json);
+  SerializedClass.fromJSON(String json) : count = int.parse(json);
+
+  final int count;
 
   String get toJSON => count.toString();
 }
