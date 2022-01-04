@@ -1,8 +1,6 @@
 // ignore_for_file: close_sinks, avoid-late-keyword,
 // ignore_for_file: implicit_dynamic_function, implicit_dynamic_parameter
 
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 
