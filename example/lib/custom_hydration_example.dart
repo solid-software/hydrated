@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated/hydrated.dart';
 
-void main() => runApp(StructuredDataHydrationExample());
+void main() => runApp(CustomHydrationExample());
 
 /// This is an example showing the usage of [HydratedSubject]
-/// with structured data types.
-class StructuredDataHydrationExample extends StatelessWidget {
+/// with custom persistence and hydration.
+class CustomHydrationExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
