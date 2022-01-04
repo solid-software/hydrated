@@ -17,12 +17,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({
-    Key? key,
-    required String title,
-  })  : _title = title,
-        super(key: key);
-
   final String _title;
 
   final _countSubject = HydratedSubject<SerializedClass>(
@@ -31,6 +25,12 @@ class MyHomePage extends StatelessWidget {
     persist: (value) => value.toJSON,
     seedValue: const SerializedClass(0),
   );
+
+  MyHomePage({
+    Key? key,
+    required String title,
+  })  : _title = title,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

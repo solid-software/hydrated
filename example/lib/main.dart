@@ -17,15 +17,15 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
+  final String _title;
+
+  final _count = HydratedSubject<int>("count", seedValue: 0);
+
   MyHomePage({
     Key? key,
     required String title,
   })  : _title = title,
         super(key: key);
-
-  final String _title;
-
-  final _count = HydratedSubject<int>("count", seedValue: 0);
 
   @override
   Widget build(BuildContext context) {

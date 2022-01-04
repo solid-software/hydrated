@@ -45,6 +45,19 @@ typedef HydrateCallback<T> = T Function(String);
 ///   );
 /// ```
 class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
+  final String _key;
+  final HydrateCallback<T>? _hydrate;
+  final PersistCallback<T>? _persist;
+  final BehaviorSubject<T> _subject;
+  final VoidCallback? _onHydrate;
+  final T? _seedValue;
+
+  final KeyValueStore _persistence;
+
+  /// A unique key that references a storage container
+  /// for a value persisted on the device.
+  String get key => _key;
+
   /// Create an instance of a [HydratedSubject] that will persist
   /// values of type [T] by the provided [key] using the [keyValueStore].
   ///
@@ -105,19 +118,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   ) : super(_subject, _subject.stream) {
     _hydrateSubject();
   }
-
-  final String _key;
-  final HydrateCallback<T>? _hydrate;
-  final PersistCallback<T>? _persist;
-  final BehaviorSubject<T> _subject;
-  final VoidCallback? _onHydrate;
-  final T? _seedValue;
-
-  final KeyValueStore _persistence;
-
-  /// A unique key that references a storage container
-  /// for a value persisted on the device.
-  String get key => _key;
 
   @override
   void onAdd(T event) {

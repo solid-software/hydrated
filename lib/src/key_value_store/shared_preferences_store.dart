@@ -12,10 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - `String`
 /// - `List<String>`.
 class SharedPreferencesStore implements KeyValueStore {
+  static const _areTypesEqual = TypeUtils.areTypesEqual;
+
   /// Create an instance of [SharedPreferences] storage wrapper.
   const SharedPreferencesStore();
-
-  static const _areTypesEqual = TypeUtils.areTypesEqual;
 
   @override
   Future<T?> get<T>(String key) async {
