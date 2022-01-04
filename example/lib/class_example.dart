@@ -69,11 +69,11 @@ class MyHomePage extends StatelessWidget {
 }
 
 class SerializedClass {
+  final int count;
+
   const SerializedClass(this.count);
 
   SerializedClass.fromJSON(String json) : count = int.parse(json);
-
-  final int count;
 
   String get toJSON => count.toString();
 }
