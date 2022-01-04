@@ -203,28 +203,20 @@ void main() {
       });
 
       test(
-          'given persistence interface `get` throws an Exception, '
-          'constructing the HydratedSubject throws '
-          'an asynchronous uncatchable error', () {
-        mockKeyValueStore.getOverride = (_) async => throw Exception('test');
-        runZonedGuarded(
-          () {
-            final completer = Completer<void>();
-            HydratedSubject<int>(
-              key,
-              keyValueStore: mockKeyValueStore,
-              onHydrate: completer.complete,
-            );
-
-            return completer.future;
-          },
-          expectAsync2(
-            (error, _) {
-              expect(error, isA<Exception>());
-            },
-            count: 1,
-          ),
+          'given persistence interface get throws an Exception, '
+          'constructing the HydratedSubject propagates the exception',
+          () async {
+        mockKeyValueStore.getOverride = (_) async {
+          throw Exception('test');
+        };
+        final s = HydratedSubject<int>(
+          key,
+          keyValueStore: mockKeyValueStore,
         );
+
+        await pumpEventQueue();
+
+        expect(s.error, isA<Exception>());
       });
 
       test(
