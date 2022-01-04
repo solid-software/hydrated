@@ -195,7 +195,6 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   }
 
   @override
-  // ignore: long-parameter-list
   Subject<R> createForwardingSubject<R>({
     VoidCallback? onListen,
     VoidCallback? onCancel,
