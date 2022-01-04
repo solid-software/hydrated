@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated/hydrated.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(PrimitivesHydrationExample());
 
-class MyApp extends StatelessWidget {
+/// This is an example showing the usage of [HydratedSubject]
+/// with primitive data types.
+class PrimitivesHydrationExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,17 +13,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Hydrated Demo'),
+      home: _MainPage(title: 'Hydrated Demo'),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class _MainPage extends StatelessWidget {
   final String _title;
 
   final _count = HydratedSubject<int>("count", seedValue: 0);
 
-  MyHomePage({
+  _MainPage({
     Key? key,
     required String title,
   })  : _title = title,
@@ -61,6 +63,7 @@ class MyHomePage extends StatelessWidget {
     _count.value++;
   }
 
+  /// Release resources
   void dispose() {
     _count.close();
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated/hydrated.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(StructuredDataHydrationExample());
 
-class MyApp extends StatelessWidget {
+/// This is an example showing the usage of [HydratedSubject]
+/// with structured data types.
+class StructuredDataHydrationExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,12 +13,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Hydrated Demo'),
+      home: _MainPage(title: 'Hydrated Demo'),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class _MainPage extends StatelessWidget {
   final String _title;
 
   final _countSubject = HydratedSubject<SerializedClass>(
@@ -26,7 +28,7 @@ class MyHomePage extends StatelessWidget {
     seedValue: const SerializedClass(0),
   );
 
-  MyHomePage({
+  _MainPage({
     Key? key,
     required String title,
   })  : _title = title,
@@ -68,12 +70,18 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+/// A sample structured data class.
 class SerializedClass {
+
+  /// FAB tap counter.
   final int count;
 
+  /// ADT constructor.
   const SerializedClass(this.count);
 
+  /// Deserialize an instance of a structured data class.
   SerializedClass.fromJSON(String json) : count = int.parse(json);
 
+  /// Serialize the data class.
   String get toJSON => count.toString();
 }
