@@ -17,4 +17,4 @@ dev_dependencies:
   equatable:
   flutter_test:
     sdk: flutter
-  solid_lints: ^0.0.3
+  solid_lints: ^0.0.4

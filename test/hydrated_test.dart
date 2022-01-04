@@ -1,4 +1,4 @@
-// ignore_for_file: close_sinks, long-method, avoid-late-keyword,
+// ignore_for_file: close_sinks, avoid-late-keyword,
 // ignore_for_file: implicit_dynamic_function, implicit_dynamic_parameter
 
 import 'dart:async';

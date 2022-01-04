@@ -1,4 +1,4 @@
-// ignore_for_file: close_sinks, long-method, no-magic-number
+// ignore_for_file: close_sinks, no-magic-number
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
