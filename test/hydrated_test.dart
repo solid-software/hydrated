@@ -1,11 +1,10 @@
-// ignore_for_file: close_sinks, avoid-late-keyword,
-// ignore_for_file: implicit_dynamic_function, implicit_dynamic_parameter
+// ignore_for_file: close_sinks, avoid-late-keyword
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 
-typedef GetOverride = Future<dynamic> Function(String key);
-typedef PutOverride = Future<void> Function(String key, dynamic value);
+typedef GetOverride = Future<Object?> Function(String key);
+typedef PutOverride = Future<void> Function(String key, Object value);
 
 class _InMemoryKeyValueStore implements KeyValueStore {
   final Map<String, Object?> store = {};
@@ -24,7 +23,7 @@ class _InMemoryKeyValueStore implements KeyValueStore {
   Future<void> put<T>(String key, T? value) async {
     final _putOverride = putOverride;
     if (_putOverride != null) {
-      await _putOverride(key, value);
+      await _putOverride(key, value as Object);
 
       return;
     }
@@ -145,7 +144,7 @@ void main() {
         () {
       const testValue = 42;
       mockKeyValueStore.putOverride = expectAsync2(
-        (key, dynamic value) async {
+        (key, value) async {
           expect(value, equals(testValue));
         },
         count: 1,
