@@ -1,4 +1,3 @@
-// ignore_for_file: close_sinks, no-magic-number
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,26 +61,46 @@ void main() {
 
     group('correctly handles data type', () {
       test('int', () async {
-        await _testPersistence<int?>("int", 1, 2);
+        const initial = 1;
+        const changed = 2;
+        await _testPersistence<int?>(
+          "int",
+          initialValue: initial,
+          changedValue: changed,
+        );
       });
 
       test('double', () async {
-        await _testPersistence<double?>("double", 1.1, 2.2);
+        const initial = 1.1;
+        const changed = 2.2;
+        await _testPersistence<double?>(
+          "double",
+          initialValue: initial,
+          changedValue: changed,
+        );
       });
 
       test('bool', () async {
-        await _testPersistence<bool?>("bool", true, false);
+        await _testPersistence<bool?>(
+          "bool",
+          initialValue: true,
+          changedValue: false,
+        );
       });
 
       test('String', () async {
-        await _testPersistence<String?>("String", "first", "second");
+        await _testPersistence<String?>(
+          "String",
+          initialValue: "first",
+          changedValue: "second",
+        );
       });
 
       test('List<String>', () async {
         await _testPersistence<List<String>?>(
           "List<String>",
-          ["a", "b"],
-          ["c", "d"],
+          initialValue: ["a", "b"],
+          changedValue: ["c", "d"],
         );
       });
     });
@@ -96,27 +115,27 @@ void _setMockPersistedValue(String key, Object? value) {
 
 /// The test procedure for a HydratedSubject
 Future<void> _testPersistence<T>(
-  String key,
-  T first,
-  T second,
-) async {
+  String key, {
+  required T initialValue,
+  required T changedValue,
+}) async {
   const persistence = SharedPreferencesStore();
 
   /// null before setting anything
   expect(await persistence.get<T>(key), isNull);
 
-  _setMockPersistedValue(key, first);
+  _setMockPersistedValue(key, initialValue);
 
   /// restores from pre-existing persisted value
-  expect(await persistence.get<T>(key), equals(first));
+  expect(await persistence.get<T>(key), equals(initialValue));
 
   /// persists a new value
-  await persistence.put(key, second);
-  expect(await persistence.get<T>(key), equals(second));
+  await persistence.put(key, changedValue);
+  expect(await persistence.get<T>(key), equals(changedValue));
 
   /// check shared_preferences stored value
   final prefs = await SharedPreferences.getInstance();
-  expect(prefs.get(key), equals(second));
+  expect(prefs.get(key), equals(changedValue));
 
   /// remove persisted value
   await persistence.put(key, null as T);

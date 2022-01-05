@@ -1,0 +1,5 @@
+include: package:solid_lints/analysis_options_test.yaml
+
+analyzer:
+  exclude:
+    - hydrated_behavior_test.dart # these tests were taken verbatim from rxdart package.

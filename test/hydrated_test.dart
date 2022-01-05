@@ -1,5 +1,4 @@
-// ignore_for_file: close_sinks, avoid-late-keyword
-
+// ignore_for_file: close_sinks
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated/hydrated.dart';
 
