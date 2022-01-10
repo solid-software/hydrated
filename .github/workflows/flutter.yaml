@@ -18,3 +18,4 @@ jobs:
         uses: dart-code-checker/dart-code-metrics-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          pull_request_comment: true
