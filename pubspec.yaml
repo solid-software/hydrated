@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.0.1
 
 dev_dependencies:
+  dart_code_metrics:
   equatable:
   flutter_test:
     sdk: flutter
