@@ -25,11 +25,17 @@ class SharedPreferencesStore implements KeyValueStore {
     T? val;
 
     try {
-      if (_areTypesEqual<T, List<String>>() ||
+      if (_areTypesEqual<T, int>() || _areTypesEqual<T, int?>()) {
+        val = prefs.getInt(key) as T?;
+      } else if (_areTypesEqual<T, double>() || _areTypesEqual<T, double?>()) {
+        val = prefs.getDouble(key) as T?;
+      } else if (_areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>()) {
+        val = prefs.getBool(key) as T?;
+      } else if (_areTypesEqual<T, String>() || _areTypesEqual<T, String?>()) {
+        val = prefs.getString(key) as T?;
+      } else if (_areTypesEqual<T, List<String>>() ||
           _areTypesEqual<T, List<String>?>()) {
         val = prefs.getStringList(key) as T?;
-      } else {
-        val = prefs.get(key) as T?;
       }
     } catch (e) {
       throw StoreError(
@@ -40,18 +46,11 @@ class SharedPreferencesStore implements KeyValueStore {
     return val;
   }
 
-  bool _isInt<T>() => _areTypesEqual<T, int>() || _areTypesEqual<T, int?>();
-  bool _isDouble<T>() =>
-      _areTypesEqual<T, double>() || _areTypesEqual<T, double?>();
-  bool _isBool<T>() => _areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>();
-  bool _isString<T>() =>
-      _areTypesEqual<T, String>() || _areTypesEqual<T, String?>();
-
   @override
   Future<void> put<T>(String key, T? value) async {
     _ensureSupportedType<T>();
     final prefs = await _getPrefs();
-  
+
     if (value == null) {
       await prefs.remove(key);
     } else if (value is int) {
@@ -68,10 +67,14 @@ class SharedPreferencesStore implements KeyValueStore {
   }
 
   void _ensureSupportedType<T>() {
-    if (_isInt<T>() ||
-        _isDouble<T>() ||
-        _isBool<T>() ||
-        _isString<T>()||
+    if (_areTypesEqual<T, int>() ||
+        _areTypesEqual<T, int?>() ||
+        _areTypesEqual<T, double>() ||
+        _areTypesEqual<T, double?>() ||
+        _areTypesEqual<T, bool>() ||
+        _areTypesEqual<T, bool?>() ||
+        _areTypesEqual<T, String>() ||
+        _areTypesEqual<T, String?>() ||
         _areTypesEqual<T, List<String>>() ||
         _areTypesEqual<T, List<String>?>()) {
       return;
