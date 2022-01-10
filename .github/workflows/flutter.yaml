@@ -1,10 +1,10 @@
-name:  Flutter
-on: [push,pull_request]
+name: Flutter
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v1
       - uses: subosito/flutter-action@v1
@@ -12,5 +12,9 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter analyze
+      - name: dart-code-metrics
+        uses: dart-code-checker/dart-code-metrics-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run tests
         run: flutter test -r expanded
