@@ -12,9 +12,9 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter analyze
+      - name: Run tests
+        run: flutter test -r expanded
       - name: dart-code-metrics
         uses: dart-code-checker/dart-code-metrics-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run tests
-        run: flutter test -r expanded
