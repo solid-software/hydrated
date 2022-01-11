@@ -14,7 +14,10 @@ jobs:
       - run: flutter analyze
       - name: Dart Code Metrics
         run: |
-          dart run dart_code_metrics:metrics analyze lib test example
-          --set-exit-on-violation-level=noted
+          dart run dart_code_metrics:metrics analyze \
+            lib \
+            test \
+            example \
+            --set-exit-on-violation-level=noted
       - name: Run tests
         run: flutter test -r expanded
