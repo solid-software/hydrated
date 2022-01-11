@@ -64,7 +64,7 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   /// The [seedValue], if specified is emitted immediately after instantiating
   /// the subject.
   ///
-  /// When used with structured data, [hydrate] and [persist] callbacks
+  /// When used with non-primitive data types, [hydrate] and [persist] callbacks
   /// must both be provided.
   factory HydratedSubject(
     String key, {
