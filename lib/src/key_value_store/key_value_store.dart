@@ -11,7 +11,7 @@ abstract class KeyValueStore {
 
   /// Retrieve a value from persistence.
   ///
-  /// Throw a [StoreError] if encountering a problem while restoring a value 
+  /// Throw a [StoreError] if encountering a problem while restoring a value
   /// from the storage.
   Future<T?> get<T>(String key);
 }

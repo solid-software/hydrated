@@ -51,7 +51,7 @@ class SharedPreferencesStore implements KeyValueStore {
   Future<void> put<T>(String key, T? value) async {
     _ensureSupportedType<T>();
     final prefs = await _getPrefs();
-  
+
     if (value == null) {
       await prefs.remove(key);
     } else if (value is int) {
@@ -71,7 +71,7 @@ class SharedPreferencesStore implements KeyValueStore {
     if (_isInt<T>() ||
         _isDouble<T>() ||
         _isBool<T>() ||
-        _isString<T>()||
+        _isString<T>() ||
         _areTypesEqual<T, List<String>>() ||
         _areTypesEqual<T, List<String>?>()) {
       return;

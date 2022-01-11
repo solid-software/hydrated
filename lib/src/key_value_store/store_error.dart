@@ -1,4 +1,4 @@
-/// An error encountered when persisting a value, 
+/// An error encountered when persisting a value,
 /// or restoring it from persistence.
 ///
 /// This is probably a configuration error -- check the `KeyValueStore`
@@ -7,7 +7,7 @@
 class StoreError extends Error {
   /// A description of an error.
   final String message;
-  
+
   /// A storage error with a [message] describing its details.
   StoreError(this.message);
 

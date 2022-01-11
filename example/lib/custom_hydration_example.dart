@@ -72,8 +72,7 @@ class _MainPage extends StatelessWidget {
 
 /// A sample serialized data class.
 class SerializedClass {
-
-  /// Value that is serialized .
+  /// Value that is serialized.
   final int count;
 
   /// ADT constructor.
