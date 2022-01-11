@@ -25,8 +25,7 @@ class SharedPreferencesStore implements KeyValueStore {
     T? val;
 
     try {
-      if (_areTypesEqual<T, List<String>>() ||
-          _areTypesEqual<T, List<String>?>()) {
+      if (_isListOfStrings<T>()) {
         val = prefs.getStringList(key) as T?;
       } else {
         val = prefs.get(key) as T?;
@@ -39,13 +38,6 @@ class SharedPreferencesStore implements KeyValueStore {
 
     return val;
   }
-
-  bool _isInt<T>() => _areTypesEqual<T, int>() || _areTypesEqual<T, int?>();
-  bool _isDouble<T>() =>
-      _areTypesEqual<T, double>() || _areTypesEqual<T, double?>();
-  bool _isBool<T>() => _areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>();
-  bool _isString<T>() =>
-      _areTypesEqual<T, String>() || _areTypesEqual<T, String?>();
 
   @override
   Future<void> put<T>(String key, T? value) async {
@@ -67,13 +59,22 @@ class SharedPreferencesStore implements KeyValueStore {
     }
   }
 
+  bool _isInt<T>() => _areTypesEqual<T, int>() || _areTypesEqual<T, int?>();
+  bool _isDouble<T>() =>
+      _areTypesEqual<T, double>() || _areTypesEqual<T, double?>();
+  bool _isBool<T>() => _areTypesEqual<T, bool>() || _areTypesEqual<T, bool?>();
+  bool _isString<T>() =>
+      _areTypesEqual<T, String>() || _areTypesEqual<T, String?>();
+
+  bool _isListOfStrings<T>() =>
+      _areTypesEqual<T, List<String>>() || _areTypesEqual<T, List<String>?>();
+
   void _ensureSupportedType<T>() {
     if (_isInt<T>() ||
         _isDouble<T>() ||
         _isBool<T>() ||
         _isString<T>() ||
-        _areTypesEqual<T, List<String>>() ||
-        _areTypesEqual<T, List<String>?>()) {
+        _isListOfStrings<T>()) {
       return;
     } else {
       throw StoreError.unsupportedType(
