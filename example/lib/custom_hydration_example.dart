@@ -70,10 +70,10 @@ class _MainPage extends StatelessWidget {
   }
 }
 
-/// A sample structured data class.
+/// A sample serialized data class.
 class SerializedClass {
 
-  /// FAB tap counter.
+  /// Value that is serialized .
   final int count;
 
   /// ADT constructor.
