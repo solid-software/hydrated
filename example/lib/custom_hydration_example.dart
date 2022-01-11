@@ -23,7 +23,7 @@ class _MainPage extends StatelessWidget {
 
   final _countSubject = HydratedSubject<SerializedClass>(
     "serialized-count",
-    hydrate: (value) => SerializedClass.fromJSON(value),
+    hydrate: (value) => SerializedClass.fromJson(value),
     persist: (value) => value.toJSON,
     seedValue: const SerializedClass(0),
   );
@@ -72,7 +72,6 @@ class _MainPage extends StatelessWidget {
 
 /// A sample structured data class.
 class SerializedClass {
-
   /// FAB tap counter.
   final int count;
 
@@ -80,7 +79,7 @@ class SerializedClass {
   const SerializedClass(this.count);
 
   /// Deserialize an instance of a structured data class.
-  SerializedClass.fromJSON(String json) : count = int.parse(json);
+  SerializedClass.fromJson(String json) : count = int.parse(json);
 
   /// Serialize the data class.
   String get toJSON => count.toString();
