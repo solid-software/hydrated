@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated/hydrated.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(PrimitivesHydrationExample());
 
-class MyApp extends StatelessWidget {
+/// This is an example showing the usage of [HydratedSubject]
+/// with primitive data types.
+class PrimitivesHydrationExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,16 +13,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Hydrated Demo'),
+      home: _MainPage(title: 'Hydrated Demo'),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class _MainPage extends StatelessWidget {
   final String _title;
+
   final _count = HydratedSubject<int>("count", seedValue: 0);
 
-  MyHomePage({
+  _MainPage({
     Key? key,
     required String title,
   })  : _title = title,
@@ -30,7 +33,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this._title),
+        title: Text(_title),
       ),
       body: Center(
         child: StreamBuilder<int>(
@@ -39,7 +42,7 @@ class MyHomePage extends StatelessWidget {
           builder: (context, snap) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('You have pushed the button this many times:'),
+              const Text('You have pushed the button this many times:'),
               Text(
                 '${snap.data}',
                 style: Theme.of(context).textTheme.headline4,
@@ -51,7 +54,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -60,6 +63,7 @@ class MyHomePage extends StatelessWidget {
     _count.value++;
   }
 
+  /// Release resources
   void dispose() {
     _count.close();
   }

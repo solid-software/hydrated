@@ -1,4 +1,4 @@
-import 'store_error.dart';
+import 'package:hydrated/src/key_value_store/store_error.dart';
 
 /// A generic key-value persistence interface.
 abstract class KeyValueStore {
@@ -11,6 +11,7 @@ abstract class KeyValueStore {
 
   /// Retrieve a value from persistence.
   ///
-  /// Throw a [StoreError] if encountering a problem while restoring a value from the storage.
+  /// Throw a [StoreError] if encountering a problem while restoring a value
+  /// from the storage.
   Future<T?> get<T>(String key);
 }

@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:hydrated/src/key_value_store/key_value_store.dart';
+import 'package:hydrated/src/key_value_store/shared_preferences_store.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'key_value_store/key_value_store.dart';
-import 'key_value_store/store_error.dart';
-import 'key_value_store/shared_preferences_store.dart';
 
 /// A callback for encoding an instance of a data class into a String.
 typedef PersistCallback<T> = String? Function(T);
@@ -31,13 +29,13 @@ typedef HydrateCallback<T> = T Function(String);
 /// ```
 ///   final user = HydratedSubject<User>(
 ///     "user",
-///     hydrate: (String s) => User.fromJSON(s),
+///     hydrate: (String s) => User.fromJson(s),
 ///     persist: (User user) => user.toJSON(),
 ///     seedValue: User.empty(),
 ///   );
 /// ```
 ///
-/// Hydration is performed automatically and is asynchronous.
+/// Hydration is performed automatically and is asynchronously.
 /// The `onHydrate` callback is called when hydration is complete.
 ///
 /// ```
@@ -60,18 +58,14 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
   /// for a value persisted on the device.
   String get key => _key;
 
-  HydratedSubject._(
-    this._key,
-    this._seedValue,
-    this._hydrate,
-    this._persist,
-    this._onHydrate,
-    this._subject,
-    this._persistence,
-  ) : super(_subject, _subject.stream) {
-    _hydrateSubject();
-  }
-
+  /// Create an instance of a [HydratedSubject] that will persist
+  /// values of type [T] by the provided [key] using the [keyValueStore].
+  ///
+  /// The [seedValue], if specified is emitted immediately after instantiating
+  /// the subject.
+  ///
+  /// When used with non-primitive data types, [hydrate] and [persist] callbacks
+  /// must both be provided.
   factory HydratedSubject(
     String key, {
     T? seedValue,
@@ -84,9 +78,10 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
     KeyValueStore keyValueStore = const SharedPreferencesStore(),
   }) {
     assert(
-        (hydrate == null && persist == null) ||
-            (hydrate != null && persist != null),
-        '`hydrate` and `persist` callbacks must both be present.');
+      (hydrate == null && persist == null) ||
+          (hydrate != null && persist != null),
+      '`hydrate` and `persist` callbacks must both be present.',
+    );
     // ignore: close_sinks
     final subject = seedValue != null
         ? BehaviorSubject<T>.seeded(
@@ -110,6 +105,18 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       subject,
       keyValueStore,
     );
+  }
+
+  HydratedSubject._(
+    this._key,
+    this._seedValue,
+    this._hydrate,
+    this._persist,
+    this._onHydrate,
+    this._subject,
+    this._persistence,
+  ) : super(_subject, _subject.stream) {
+    _hydrateSubject();
   }
 
   @override
@@ -168,23 +175,21 @@ class HydratedSubject<T> extends Subject<T> implements ValueStream<T> {
       }
 
       _onHydrate?.call();
-    } on StoreError catch (e, s) {
+    } catch (e, s) {
       addError(e, s);
     }
   }
 
-  void _persistValue(T val) async {
+  Future<void> _persistValue(T val) async {
     try {
       final persist = _persist;
-      var persistedVal;
       if (persist != null) {
-        persistedVal = persist(val);
-        await _persistence.put<String>(_key, persistedVal);
+        final serializedValue = persist(val);
+        await _persistence.put<String>(_key, serializedValue);
       } else {
-        persistedVal = val;
-        await _persistence.put<T>(_key, persistedVal);
+        await _persistence.put<T>(_key, val);
       }
-    } on StoreError catch (e, s) {
+    } catch (e, s) {
       addError(e, s);
     }
   }

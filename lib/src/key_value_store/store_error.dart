@@ -1,4 +1,5 @@
-/// An error encountered when persisting a value, or restoring it from persistence.
+/// An error encountered when persisting a value,
+/// or restoring it from persistence.
 ///
 /// This is probably a configuration error -- check the `KeyValueStore`
 /// implementation and `HydratedSubject` `persist` and `hydrate` callbacks
